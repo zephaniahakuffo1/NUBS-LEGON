@@ -32,7 +32,7 @@ const NUBS_DATA = {
   contact: {
     venue: "Commonwealth Hall Chapel, University of Ghana, Legon",
     directions: "Sunday gathering is held at the Commonwealth Hall Chapel at 11:00 AM.",
-    email: "nubslegon17@gmail.com",
+    email: "nubslegon080@gmail.com",
     phone: "0536841622",
     phoneWhatsApp: "233536841622",
     prayerWhatsApp: "233598352200",
