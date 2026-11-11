@@ -1,0 +1,12 @@
+wrangler.jsonc
+.assetsignore
+package.json
+README.md
+docs
+scripts
+netlify.toml
+.editorconfig
+.prettierrc
+.gitignore
+.git
+node_modules
