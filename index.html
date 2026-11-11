@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NUBS Legon | University of Ghana</title>
+  <meta name="description" content="National Union of Baptist Students, University of Ghana, Legon. One faith. One family. Empowered for action.">
+  <meta name="theme-color" content="#2860e0">
+  <link rel="icon" type="image/png" href="assets/images/nubs_legon_logo.png">
+  <link rel="canonical" href="https://nubslegon.com/">
+  <meta property="og:url" content="https://nubslegon.com/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:title" content="NUBS Legon | University of Ghana">
+  <meta property="og:description" content="One faith. One family. Empowered for action.">
+  <meta property="og:image" content="https://nubslegon.com/assets/images/hero_home.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/images/hero_home.jpg" fetchpriority="high">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <span>National Union of Baptist Students &middot; Legon</span>
+    <a href="https://www.nubsghana.com" target="_blank" rel="noopener">Part of the NUBS Ghana family &#8599;</a>
+  </div>
+</div>
+
+<header class="header" id="top">
+  <div class="wrap header-in">
+    <a class="brand" href="#top" aria-label="NUBS Legon home">
+      <img src="assets/images/nubs_legon_logo.png" alt="" width="64" height="38">
+      <span class="brand-text">
+        <span class="brand-name">NUBS<b>LEGON</b></span>
+        <span class="brand-sub">University of Ghana</span>
+      </span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">
+      <span class="sr">Menu</span><span class="bars" aria-hidden="true"></span>
+    </button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#about">About us</a>
+      <a href="#auxiliaries">Auxiliaries</a>
+      <a href="#sermons">Sermons</a>
+      <a href="#freshers">Freshers</a>
+      <a href="#events">Events</a>
+      <a href="#leadership">Leadership</a>
+      <a href="#gallery">Gallery</a>
+      <a class="btn btn-primary btn-sm" href="#contact">Connect with us &#8599;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="wrap hero-in">
+      <p class="eyebrow eyebrow-light"><span class="dash"></span><span id="heroTheme">Faith. Fellowship. Purpose.</span></p>
+      <h1 id="heroTitle">Welcome to<br>NUBS<span>LEGON</span><em class="dot">.</em></h1>
+      <p class="hero-lede">One faith. One family. Empowered for action.<br>The National Union of Baptist Students<br>at the University of Ghana, Legon.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#about">Discover our fellowship &#8599;</a>
+        <a class="btn btn-ghost" href="#join" data-open="join">Join the family &rarr;</a>
+      </div>
+      <a class="hero-scroll" href="#about"><span>Get to know us</span><i aria-hidden="true">&darr;</i></a>
+      <figure class="hero-frame"><img src="assets/images/hero_home.jpg" fetchpriority="high" decoding="async" width="1080" height="719" alt="Members of NUBS Legon with the Annual Congress trophy"><figcaption><b>One faith.</b> One family.</figcaption></figure>
+    </div>
+  </section>
+  <div class="pillars" aria-label="Fellowship pillars"><div class="wrap"><ul id="pillarList"></ul></div></div>
+
+  <!-- NEXT GATHERING + WORD FOR THE WEEK -->
+  <section class="section" id="this-week" aria-labelledby="weekTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">This week</p>
+          <h2 id="weekTitle">Come and be with us.</h2>
+        </div>
+        <p class="head-note">The next gathering and the word we are standing on this year.</p>
+      </div>
+      <div class="week-grid">
+        <article class="card card-navy countdown-card">
+          <p class="label label-cyan">Next gathering</p>
+          <h3 id="nextTitle">Sunday Divine Gathering</h3>
+          <p class="muted-light" id="nextWhen"></p>
+          <div class="countdown" id="countdown" role="timer" aria-live="off">
+            <div><b id="cdD">--</b><span>days</span></div>
+            <div><b id="cdH">--</b><span>hours</span></div>
+            <div><b id="cdM">--</b><span>minutes</span></div>
+            <div><b id="cdS">--</b><span>seconds</span></div>
+          </div>
+          <div class="row-actions">
+            <a class="btn btn-light btn-sm" id="nextMap" href="https://www.google.com/maps/search/?api=1&query=Commonwealth+Hall+University+of+Ghana+Legon" target="_blank" rel="noopener">Find the venue &#8599;</a>
+          </div>
+        </article>
+        <article class="card word-card">
+          <p class="label">Word for the year <span class="week-of">2026/2027</span></p>
+          <blockquote id="weekVerse"></blockquote>
+          <p class="verse-ref" id="weekRef"></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / AKWAABA -->
+  <section class="section section-tight" id="about" aria-labelledby="aboutTitle">
+    <div class="wrap split">
+      <figure class="photo-frame">
+        <span class="n-badge" aria-hidden="true">N</span>
+        <img src="assets/images/family_blue.jpg" alt="Members of NUBS Legon dressed in matching blue" loading="lazy" decoding="async">
+        <figcaption><small>This is our family</small><b>This is NUBSLEGON.</b></figcaption>
+      </figure>
+      <div class="about-copy">
+        <p class="eyebrow">Akwaaba &middot; Welcome home</p>
+        <h2 id="aboutTitle">A campus fellowship.<br><em>A family in Christ.</em></h2>
+        <p class="lead">We are the National Union of Baptist Students at the University of Ghana, Legon.</p>
+        <p>Our local fellowship is part of NUBS Ghana, a Christian student movement that brings Baptist and non-Baptist students together for fellowship, discipleship, leadership development and Christian service.</p>
+        <p>At the heart of our shared identity is a commitment to grow in Christ and put faith into action, on campus and beyond.</p>
+        <a class="link-arrow" id="nationalLink" href="https://www.nubsghana.com" target="_blank" rel="noopener">Explore the NUBS Ghana story &#8599;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDENTITY -->
+  <section class="section band" id="identity" aria-labelledby="idTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">One foundation. A shared calling.</p>
+          <h2 id="idTitle">Our identity in Christ.</h2>
+        </div>
+        <p class="head-note">Grounded in the national union's mission. Lived out through our campus community.</p>
+      </div>
+      <div class="id-grid">
+        <article class="card card-blue">
+          <p class="label label-light">Our mission</p>
+          <h3>Grow in faith.<br>Go out in service.</h3>
+          <p>NUBS Ghana's mission brings together evangelism, discipleship, student leadership and care for students' spiritual, academic and socio-economic needs.</p>
+          <a class="link-arrow link-light" href="https://www.nubsghana.com/#about" target="_blank" rel="noopener">Read the national mission &#8599;</a>
+        </article>
+        <article class="card">
+          <p class="label">Our vision</p>
+          <h3>Christ's mission.<br>Every campus.</h3>
+          <p>The national vision is to fulfil the Great Commission in campuses and communities, in alignment with the Ghana Baptist Convention.</p>
+        </article>
+        <article class="card emblem-card">
+          <p class="label">Our emblem</p>
+          <img src="assets/images/emblem_graphic.png" alt="The Ghana Baptist Convention and NUBS emblems side by side" loading="lazy" decoding="async">
+          <p>The GBC and NUBS emblem connects our local fellowship to the wider Baptist family.</p>
+        </article>
+      </div>
+      <figure class="motto">
+        <small>Our motto</small>
+        <blockquote id="mottoText">&ldquo;Presenting every man perfect in Christ.&rdquo;</blockquote>
+        <small id="mottoRef">Colossians 1:28</small>
+      </figure>
+    </div>
+  </section>
+
+  <!-- EMPOWERED FOR ACTION -->
+  <section class="section" aria-labelledby="actionTitle">
+    <div class="wrap action-grid">
+      <div>
+        <p class="eyebrow">Empowered for action!</p>
+        <h2 id="actionTitle">A faith that<br><em>moves us forward.</em></h2>
+        <p class="muted">The NUBS identity calls us to grow inwardly and reach outwardly. These shared values shape how we learn, worship and serve.</p>
+        <div class="theme-collage">
+          <figure class="tc-wide"><img src="assets/images/theme_wide.jpg" alt="Theme of the year: Oikodomeo, a people strengthened onto good works" loading="lazy" decoding="async"></figure>
+          <figure class="tc-square"><img src="assets/images/theme_square.jpg" alt="Oikodomeo 2026/2027, Isaiah 60:22 and Zechariah 12:8" loading="lazy" decoding="async"></figure>
+          <span class="tc-tag">Our theme for 2026/2027</span>
+        </div>
+      </div>
+      <ol class="action-list">
+        <li><b>Grow together</b><span>Worship &middot; Fellowship &middot; Study &middot; Stewardship &middot; Churchmanship</span></li>
+        <li><b>Reach beyond ourselves</b><span>Missions &middot; Discipleship &middot; Ministry &middot; Social action &middot; International student ministry</span></li>
+        <li><b>Make room for one another</b><span>A fellowship for Baptist and non-Baptist students to grow in Christ.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section class="section band" id="schedule" aria-labelledby="schedTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Weekly rhythm</p>
+          <h2 id="schedTitle">When and where we meet.</h2>
+        </div>
+        <p class="head-note">All times are Ghana time.</p>
+      </div>
+      <div class="sched-grid" id="scheduleList"></div>
+    </div>
+  </section>
+
+  <!-- MINISTRIES -->
+  <section class="section" id="auxiliaries" aria-labelledby="minTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Worship, grow, serve</p>
+          <h2 id="minTitle">Our auxiliaries.</h2>
+        </div>
+        <p class="head-note">Every member has a gift. Find the place where yours fits.</p>
+      </div>
+      <div class="aux-grid" id="auxGrid"></div>
+
+      <div class="quiz card" id="quiz" aria-labelledby="quizTitle">
+        <div class="quiz-intro">
+          <p class="label">Quick quiz &middot; 1 minute</p>
+          <h3 id="quizTitle">Find your auxiliary.</h3>
+          <p class="muted">Not sure where you fit? Answer a few quick questions and we will point you to where your gifts fit. Ladies belong to BYL and men to BMW automatically.</p>
+        </div>
+        <div class="quiz-body" id="quizBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERMONS -->
+  <section class="section band" id="sermons" aria-labelledby="serTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Sermons &amp; media</p>
+          <h2 id="serTitle">Missed a Sunday? Catch up.</h2>
+        </div>
+        <p class="head-note">Press play in Telegram. New messages land there first.</p>
+      </div>
+      <div class="lib-tabs" role="tablist" aria-label="Sermons or library">
+        <button type="button" role="tab" id="tabSermons" aria-selected="true" aria-controls="panelSermons">Sermons</button>
+        <button type="button" role="tab" id="tabLibrary" aria-selected="false" aria-controls="panelLibrary">Library <span id="libCount"></span></button>
+      </div>
+      <div id="panelSermons" role="tabpanel" aria-labelledby="tabSermons">
+      <aside class="tg-card" aria-labelledby="tgTitle">
+        <div class="tg-plane" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="44" height="44"><path fill="currentColor" d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.6 13 1.9 11.5c-1-.3-1-1 .2-1.5L20.4 2.9c.9-.3 1.6.2 1.5 1.4z"/></svg>
+        </div>
+        <div class="tg-copy">
+          <p class="tg-kicker">Never miss a message</p>
+          <h3 id="tgTitle">Carry every sermon in your pocket.</h3>
+          <p>Our whole library lives in one Telegram channel. Tap play, listen on the way to class, or download for later.</p>
+          <ol class="tg-steps">
+            <li><b>1</b> Tap Join</li>
+            <li><b>2</b> Open Telegram</li>
+            <li><b>3</b> Press play</li>
+          </ol>
+        </div>
+        <a class="btn tg-btn" id="tgJoin" href="https://t.me/nubslegon" target="_blank" rel="noopener">Join the channel &#8599;</a>
+      </aside>
+      <div class="tools">
+        <label class="field field-grow"><span class="sr">Search sermons</span>
+          <input type="search" id="sermonSearch" placeholder="Search by title, speaker or passage" autocomplete="off"></label>
+      </div>
+      <div class="sermon-list" id="sermonList"></div>
+      <p class="empty" id="sermonEmpty" hidden>No sermons match your search.</p>
+      <p class="gallery-more"><button class="btn btn-outline" type="button" id="sermonMore" hidden>Show more sermons</button></p>
+      </div>
+      <div id="panelLibrary" role="tabpanel" aria-labelledby="tabLibrary" hidden>
+        <div class="lib-intro">
+          <h3>Books to grow your faith.</h3>
+          <p>Tap Read to open a book in a new tab, or download it for later.</p>
+        </div>
+        <div class="tools">
+          <label class="field field-grow"><span class="sr">Search books</span>
+            <input type="search" id="bookSearch" placeholder="Search by title or author" autocomplete="off"></label>
+        </div>
+        <div class="book-grid" id="bookGrid"></div>
+        <p class="empty" id="bookEmpty" hidden>No books match your search.</p>
+        <p class="gallery-more"><button class="btn btn-outline" type="button" id="bookMore" hidden>Show more books</button></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRESHERS -->
+  <section class="section" id="freshers" aria-labelledby="freshTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Freshers</p>
+          <h2 id="freshTitle">Welcome to NUBS Legon. <em>You belong <span class="hl">here</span>.</em></h2>
+        </div>
+        <p class="head-note" id="freshIntro"></p>
+      </div>
+
+      <div class="fr-hero">
+        <div class="fr-hero-copy">
+          <p class="tg-kicker">Step one</p>
+          <h3>Join the freshers family group.</h3>
+          <p>One tap puts you in our WhatsApp group with other freshers, the committee and the whole fellowship.</p>
+          <div class="row-actions">
+            <a class="btn fr-wa" id="frJoin" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.2-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.8-.1 1.3z"/></svg>
+              Join on WhatsApp</a>
+            <a class="btn fr-ghost" id="frMessage" href="#" target="_blank" rel="noopener">Message the committee</a>
+          </div>
+          <p class="form-msg fr-note" id="frNote"></p>
+        </div>
+        <ol class="fr-steps" id="frSteps"></ol>
+      </div>
+
+      <div class="fr-grid">
+        <form class="card fr-ask" id="askForm" novalidate>
+          <p class="label">Ask us anything</p>
+          <h3>Got a question? Send it straight to us.</h3>
+          <p class="muted">Admissions, halls, registration, service times, anything. Your question opens in WhatsApp ready to send.</p>
+          <label class="field"><span>Your question</span>
+            <textarea id="askText" rows="4" maxlength="600" placeholder="Type your question here" required></textarea></label>
+          <label class="field"><span>Your name <em>(optional)</em></span>
+            <input id="askName" type="text" maxlength="80" autocomplete="name"></label>
+          <button class="btn btn-wa" type="submit">Send on WhatsApp &#8599;</button>
+          <p class="form-msg" id="askMsg" role="status"></p>
+        </form>
+        <div>
+          <h3 class="h3-sm">Quick answers</h3>
+          <div class="faq" id="faqList"></div>
+          <h3 class="h3-sm" style="margin-top:26px">Who to contact</h3>
+          <div class="fr-contacts" id="frContacts"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENTS + NOTICES -->
+  <section class="ev-hero" id="events" aria-labelledby="evTitle">
+    <div class="wrap">
+      <p class="ev-pill">Upcoming gatherings</p>
+      <h2 id="evTitle">Latest <span>Events</span></h2>
+      <p class="ev-sub">Join us for impactful services, fellowships and special events. Grow in faith and fellowship with us.</p>
+    </div>
+    <svg class="ev-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,95 480,0 720,35 C960,70 1200,95 1440,30 L1440,90 L0,90 Z" fill="#fff"/></svg>
+  </section>
+  <section class="section ev-body">
+    <div class="wrap">
+      <h3 class="ev-h"><span class="ev-tag">Happening soon</span>UPCOMING EVENTS</h3>
+      <div class="ev-list" id="eventList"></div>
+      <div class="ev-empty" id="eventEmpty" hidden>
+        <b>Stay tuned for more!</b>
+        <p>We are preparing wonderful gatherings for you. Check back shortly to see what is next.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="notices" aria-labelledby="noticeTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Notice board</p>
+          <h2 id="noticeTitle">Announcements.</h2>
+        </div>
+      </div>
+      <div class="notice-list notice-wide" id="noticeList"></div>
+      <div class="ev-empty" id="noticeEmpty" hidden>
+        <b>No announcements right now</b>
+        <p>Nothing new on the notice board. Check back soon.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERSHIP -->
+  <section class="section dark lead-sec" id="leadership" aria-labelledby="leadTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow eyebrow-light">Dedicated servants</p>
+          <h2 id="leadTitle">Our <em>Leadership</em></h2>
+        </div>
+        <p class="head-note">Meet the executives serving NUBS Legon.</p>
+      </div>
+      <div class="leaders" id="leaderList"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="section band" id="gallery" aria-labelledby="galTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Moments</p>
+          <h2 id="galTitle">Life in the fellowship.</h2>
+        </div>
+        <p class="head-note">Tap a photo to see it larger.</p>
+      </div>
+      <div class="chips" id="galleryFilters" role="group" aria-label="Filter photos"></div>
+      <div class="gallery" id="galleryGrid"></div>
+      <p class="gallery-more"><button class="btn btn-outline" type="button" id="galleryMore" hidden>Show more photos</button></p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section dark" id="contact" aria-labelledby="conTitle">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow eyebrow-light">Connected beyond campus</p>
+        <h2 id="conTitle">Come and find us.</h2>
+        <dl class="contact-list" id="contactList"></dl>
+        <div class="social" id="socialLinks"></div>
+        <div class="row-actions">
+          <button class="btn btn-light" type="button" data-open="join">Join the family</button>
+          <button class="btn btn-ghost" type="button" data-open="helpdesk">Freshers Help Desk</button>
+        </div>
+      </div>
+      <form class="card form-card" id="prayerForm" novalidate>
+        <p class="label">Private prayer request</p>
+        <h3>We will pray with you.</h3>
+        <p class="muted" id="prayerNote"></p>
+        <label class="field"><span>Your prayer request</span>
+          <textarea id="prayerText" name="request" rows="5" required maxlength="1000" placeholder="Share what you would like us to pray about"></textarea></label>
+        <label class="field"><span>Name or contact <em>(optional)</em></span>
+          <input id="prayerName" name="name" type="text" maxlength="120" autocomplete="off"></label>
+        <button class="btn btn-wa" type="submit">Send on WhatsApp</button>
+        <p class="form-msg" id="prayerMsg" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div>
+      <p class="brand-name brand-name-light">NUBS<b>LEGON</b></p>
+      <p class="foot-note" id="footMotto"></p>
+    </div>
+    <nav aria-label="Footer"><ul>
+      <li><a href="#about">About us</a></li>
+      <li><a href="#auxiliaries">Auxiliaries</a></li>
+      <li><a href="#sermons">Sermons</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <p class="foot-note" id="copyright"></p>
+  </div>
+</footer>
+
+<!-- Back to top -->
+<button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<button class="to-top to-bottom" id="toBottom" type="button" aria-label="Scroll to the bottom"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
+
+<!-- Floating help button -->
+<button class="float-help" type="button" data-open="helpdesk" aria-label="Open the Freshers Help Desk">
+  <span aria-hidden="true">?</span> Freshers help
+</button>
+
+<!-- Help Desk dialog -->
+<dialog id="dlgHelpdesk" aria-labelledby="hdTitle">
+  <div class="dlg-in">
+    <button class="dlg-close" type="button" data-close aria-label="Close">&times;</button>
+    <p class="label">Freshers help desk</p>
+    <h3 id="hdTitle">Questions about Legon life?</h3>
+    <p class="muted">Join the freshers family group or message the committee. We are happy to help.</p>
+    <div class="row-actions">
+      <a class="btn btn-wa" id="hdWhatsApp" href="#" target="_blank" rel="noopener">Join the WhatsApp group</a>
+      <a class="btn btn-outline" href="#freshers" data-close>See the freshers page</a>
+    </div>
+    <p class="form-msg" id="hdMsg"></p>
+  </div>
+</dialog>
+
+<!-- Join dialog -->
+<dialog id="dlgJoin" aria-labelledby="joinTitle">
+  <form class="dlg-in" id="joinForm" novalidate>
+    <button class="dlg-close" type="button" data-close aria-label="Close">&times;</button>
+    <p class="label">Join the family</p>
+    <h3 id="joinTitle">Just your name and number.</h3>
+    <p class="join-for" id="joinFor" hidden></p>
+    <input id="joinAux" type="hidden" value="">
+    <label class="field"><span>Your name</span><input id="joinName" name="name" type="text" required autocomplete="name"></label>
+    <label class="field"><span>Your WhatsApp number</span><input id="joinPhone" name="phone" type="tel" required autocomplete="tel" inputmode="numeric" pattern="[0-9]*" maxlength="13" placeholder="0241234567"></label>
+    <button class="btn btn-wa btn-block" type="submit">Submit</button>
+    <p class="form-msg" id="joinMsg" role="status"></p>
+  </form>
+</dialog>
+
+<!-- Lightbox -->
+<dialog id="dlgLightbox" class="lightbox" aria-label="Photo viewer">
+  <button class="dlg-close" type="button" data-close aria-label="Close">&times;</button>
+  <img id="lightImg" alt="">
+  <p id="lightCap"></p>
+</dialog>
+
+<script src="js/fellowship-data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
