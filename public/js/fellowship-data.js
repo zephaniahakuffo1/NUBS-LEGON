@@ -692,7 +692,7 @@ const NUBS_DATA = {
     {
       role: "Cell Coordinator",
       name: "Fati Nadia Sulemana",
-      image: "assets/images/leaders/cell-coordinator.jpg",
+      image: "assets/images/leaders/cell-coordinator2.jpeg",
       imageAlt: "Cell Coordinator of NUBS Legon",
     },
     {
