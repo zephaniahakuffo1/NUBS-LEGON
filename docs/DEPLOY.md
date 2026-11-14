@@ -54,7 +54,7 @@ roll back to the previous version. Nothing is lost.
 
 ## Checklist before launch
 - [ ] Every phone number and WhatsApp link tested on your own phone
-- [ ] Email `nubslegon17@gmail.com` correct
+- [ ] Email `nubslegon080@gmail.com` correct
 - [ ] Books open and download
 - [ ] Site looks right on a phone and on a laptop
 - [ ] Past events removed or left to hide themselves
