@@ -1,0 +1,64 @@
+/* ==========================================================================
+   NUBS LEGON THEME
+   --------------------------------------------------------------------------
+   The colours, fonts and corner roundness of the whole website live here.
+   Change a value, save, refresh the page, and the whole site follows.
+
+   HOW TO CHANGE A COLOUR
+     1. Pick a colour at https://htmlcolorcodes.com and copy its HEX code
+        (looks like #2860e0) and its RGB numbers (look like 40, 96, 224).
+     2. Paste the HEX code after the colour name below.
+     3. Blue, navy and gold also have an "-rgb" line. Paste the RGB numbers
+        there so shadows and glows match.
+     4. Run  npm run check  It tells you if the two lines do not match.
+
+   Keep each line in this shape:   --name: value;
+   ========================================================================== */
+
+:root {
+  /* 1. MAIN BRAND COLOURS (change these to re-theme the site) ------------- */
+  --blue: #2860e0; /* buttons, links, blue sections */
+  --blue-rgb: 40, 96, 224; /* the same blue as three numbers */
+  --blue-dark: #1d4bb8; /* a darker blue, for when a button is pressed */
+  --navy: #1a2456; /* headings, body text and dark sections */
+  --navy-rgb: 26, 36, 86; /* the same navy as three numbers */
+  --gold: #e9b514; /* highlights and accents */
+  --gold-rgb: 233, 181, 20; /* the same gold as three numbers */
+
+  /* 2. LIGHTER AND DARKER SHADES OF THE BRAND COLOURS -------------------
+     When you change a main colour above, pick matching shades here.      */
+  --blue-light: #4f8dff; /* bright end of blue gradients */
+  --blue-deep: #14206b; /* dark end of the hero gradient */
+  --sky: #7fb0ff; /* pale blue for small labels on dark sections */
+  --cyan: #7fb0ff; /* keyboard focus ring */
+  --navy-2: #0d1e3d;
+  --navy-mid: #0d1744; /* dark cards */
+  --navy-deep: #060d2e; /* darkest background */
+  --gold-light: #ffe27a; /* gold text on blue */
+  --gold-bright: #ffd23f;
+  --gold-dark: #d99a00; /* gold text on white */
+  --gold-darker: #b98d00;
+
+  /* 3. NEUTRAL COLOURS (these rarely need to change) ---------------------- */
+  --paper: #ffffff; /* page background */
+  --mist: #f3f6fd; /* pale section background */
+  --line: #e3e9f6; /* thin borders */
+  --ink: #1a2456; /* main text colour */
+  --muted: #51607f; /* quieter text */
+  --muted-light: #b6c4e2; /* quieter text on dark sections */
+  --ok: #0a7d4b; /* "sent" messages */
+  --bad: #b42318; /* error messages */
+
+  /* 4. FONTS ----------------------------------------------------------------
+     To use a different Google Font, also change the fonts.googleapis.com
+     line near the top of index.html so the new font is downloaded.        */
+  --head: "Montserrat", "Poppins", system-ui, sans-serif; /* headings */
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; /* everything else */
+  --font-serif: Georgia, "Times New Roman", serif; /* Bible verses */
+
+  /* 5. SHAPE AND SPACING -------------------------------------------------- */
+  --radius: 20px; /* how round the corners of cards are (0px = square) */
+  --maxw: 1160px; /* widest the content gets on big screens */
+  --gap: clamp(16px, 2.4vw, 28px); /* space between cards */
+  --section-y: clamp(56px, 8vw, 104px); /* space above and below sections */
+}

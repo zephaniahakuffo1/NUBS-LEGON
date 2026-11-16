@@ -1,8 +1,10 @@
 /* ==========================================================================
    NUBS LEGON — STYLESHEET
    --------------------------------------------------------------------------
-   Plain CSS, no build step. To restyle the whole site, start with the
-   :root block below (colours, fonts, radius, spacing).
+   Plain CSS, no build step. The colours, fonts and corner roundness live in
+   css/theme.css. To restyle the whole site, change them THERE, not here.
+   In this file always write var(--blue), var(--gold) and so on, never a
+   colour code, so that a theme change reaches every part of the page.
 
    HOW THE FILE IS LAYERED (later layers refine earlier ones)
      Layer 1  Base: reset, buttons, header, hero, every section's first design
@@ -20,35 +22,6 @@
    BREAKPOINTS: 1100px (tablet landscape), 980px (tablet, mobile menu),
                 900px, 720px and 640px (phones), 600px.
    ========================================================================== */
-
-:root {
-  /* Colours */
-  --navy: #1a2456;
-  --navy-2: #0d1e3d;
-  --blue: #2860e0;
-  --blue-dark: #1d4bb8;
-  --sky: #7fb0ff;
-  --cyan: #7fb0ff;
-  --gold: #e9b514;
-  --paper: #ffffff;
-  --mist: #f3f6fd;
-  --line: #e3e9f6;
-  --ink: #1a2456;
-  --muted: #51607f;
-  --muted-light: #b6c4e2;
-  --ok: #0a7d4b;
-  --bad: #b42318;
-
-  /* Type */
-  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
-
-  /* Shape and space */
-  --radius: 20px;
-  --maxw: 1160px;
-  --gap: clamp(16px, 2.4vw, 28px);
-  --section-y: clamp(56px, 8vw, 104px);
-}
 
 *,
 *::before,
@@ -1566,10 +1539,6 @@ dialog::backdrop {
 /* ==========================================================================
    MODERN THEME (rounded cards, Montserrat headings, navy / blue / gold)
    ========================================================================== */
-:root {
-  --head: "Montserrat", "Poppins", system-ui, sans-serif;
-  --navy-deep: #060d2e;
-}
 body {
   font-size: 15.5px;
   background: #fff;
@@ -1600,7 +1569,7 @@ h2 em {
   color: var(--blue);
 }
 .dark h2 em {
-  color: #4f8dff;
+  color: var(--blue-light);
 }
 .btn {
   border-radius: 999px;
@@ -1611,7 +1580,7 @@ h2 em {
 }
 .btn-primary {
   background: var(--blue);
-  box-shadow: 0 10px 24px rgba(40, 96, 224, 0.28);
+  box-shadow: 0 10px 24px rgba(var(--blue-rgb), 0.28);
 }
 .btn-outline {
   border-color: var(--line);
@@ -1634,12 +1603,12 @@ textarea {
   font-family: var(--head);
 }
 .card {
-  box-shadow: 0 14px 40px rgba(26, 36, 86, 0.07);
+  box-shadow: 0 14px 40px rgba(var(--navy-rgb), 0.07);
   border-color: transparent;
 }
 .card-navy,
 .dark {
-  background: linear-gradient(160deg, #0d1744 0%, var(--navy-deep) 100%);
+  background: linear-gradient(160deg, var(--navy-mid) 0%, var(--navy-deep) 100%);
 }
 .card-blue {
   background: linear-gradient(150deg, #3b78f0, #2252c8);
@@ -1763,7 +1732,7 @@ textarea {
   padding: 10px;
   background: #fff;
   border-radius: 34px;
-  box-shadow: 0 30px 70px rgba(26, 36, 86, 0.18);
+  box-shadow: 0 30px 70px rgba(var(--navy-rgb), 0.18);
 }
 .hero-frame::before {
   content: "";
@@ -1792,7 +1761,7 @@ textarea {
   border-radius: 999px;
   font-family: var(--head);
   font-size: 13px;
-  box-shadow: 0 8px 20px rgba(26, 36, 86, 0.15);
+  box-shadow: 0 8px 20px rgba(var(--navy-rgb), 0.15);
 }
 .pillars {
   background: var(--navy);
@@ -1839,7 +1808,7 @@ textarea {
 .notice {
   border-radius: 20px;
   border-color: transparent;
-  box-shadow: 0 10px 30px rgba(26, 36, 86, 0.06);
+  box-shadow: 0 10px 30px rgba(var(--navy-rgb), 0.06);
 }
 .shot {
   border-radius: 22px;
@@ -1861,7 +1830,7 @@ textarea {
 }
 .aux-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 22px 50px rgba(26, 36, 86, 0.14);
+  box-shadow: 0 22px 50px rgba(var(--navy-rgb), 0.14);
 }
 .aux-card {
   transition:
@@ -1872,7 +1841,7 @@ textarea {
 .aux-photo {
   aspect-ratio: 16 / 9;
   border-radius: 0;
-  background: radial-gradient(120% 140% at 85% 0%, #4f8dff 0%, var(--blue) 40%, #14206b 100%);
+  background: radial-gradient(120% 140% at 85% 0%, var(--blue-light) 0%, var(--blue) 40%, var(--blue-deep) 100%);
 }
 .aux-abbr {
   position: absolute;
@@ -1894,7 +1863,7 @@ textarea {
   font-weight: 800;
 }
 .aux-tag {
-  color: #b98d00;
+  color: var(--gold-darker);
   font-family: var(--head);
   font-size: 11.5px;
   text-transform: uppercase;
@@ -1942,7 +1911,7 @@ textarea {
   aspect-ratio: 3 / 4;
   border-radius: 30px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-  background: #0d1744;
+  background: var(--navy-mid);
 }
 .leader.lead {
   grid-column: auto;
@@ -1962,7 +1931,7 @@ textarea {
   background: var(--blue);
   font-family: var(--head);
   font-size: 10px;
-  box-shadow: 0 8px 18px rgba(40, 96, 224, 0.45);
+  box-shadow: 0 8px 18px rgba(var(--blue-rgb), 0.45);
 }
 .leader-body .lname {
   font-family: var(--head);
@@ -2104,7 +2073,7 @@ dialog {
 }
 
 .hl {
-  color: #d99a00;
+  color: var(--gold-dark);
 }
 .dark .hl,
 .card-navy .hl,
@@ -2113,7 +2082,7 @@ dialog {
 .card-blue .hl,
 .float-help .hl,
 .lightbox .hl {
-  color: #ffd23f;
+  color: var(--gold-bright);
 }
 
 /* ---- Leadership paragraph: sits below the photos, centred, tight spacing ---- */
@@ -2296,7 +2265,7 @@ dialog {
   display: none;
 }
 .aux-photo.contain .aux-abbr {
-  color: rgba(40, 96, 224, 0.22);
+  color: rgba(var(--blue-rgb), 0.22);
 }
 .aux-photo.has-img .aux-abbr {
   display: none;
@@ -2327,7 +2296,7 @@ dialog {
   border-radius: 32px;
   color: #fff;
   background: radial-gradient(120% 140% at 0% 0%, #2a3a86 0%, var(--navy) 55%, var(--navy-deep) 100%);
-  box-shadow: 0 28px 64px rgba(26, 36, 86, 0.28);
+  box-shadow: 0 28px 64px rgba(var(--navy-rgb), 0.28);
   position: relative;
   overflow: hidden;
 }
@@ -2376,7 +2345,7 @@ dialog {
   background: rgba(255, 255, 255, 0.2);
 }
 .fr-note {
-  color: #ffd23f;
+  color: var(--gold-bright);
   min-height: 0;
 }
 .fr-steps {
@@ -2447,7 +2416,7 @@ dialog {
   border: 1px solid #d3f3df;
   border-radius: 22px;
   padding: 16px 18px;
-  box-shadow: 0 12px 32px rgba(26, 36, 86, 0.08);
+  box-shadow: 0 12px 32px rgba(var(--navy-rgb), 0.08);
   transition:
     transform 0.25s,
     box-shadow 0.25s;
@@ -2726,19 +2695,19 @@ dialog {
   border: 1px solid var(--line);
   border-radius: 26px;
   overflow: hidden;
-  box-shadow: 0 12px 34px rgba(26, 36, 86, 0.08);
+  box-shadow: 0 12px 34px rgba(var(--navy-rgb), 0.08);
   transition:
     transform 0.3s,
     box-shadow 0.3s;
 }
 .ev-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 22px 46px rgba(40, 96, 224, 0.18);
+  box-shadow: 0 22px 46px rgba(var(--blue-rgb), 0.18);
 }
 .ev-card.next {
   grid-template-columns: 340px 1fr;
   border-color: var(--gold);
-  box-shadow: 0 18px 44px rgba(233, 181, 20, 0.22);
+  box-shadow: 0 18px 44px rgba(var(--gold-rgb), 0.22);
 }
 .ev-card .ev-poster {
   aspect-ratio: auto;
@@ -2860,7 +2829,7 @@ dialog {
   place-items: center;
   background: var(--blue);
   color: #fff;
-  box-shadow: 0 10px 26px rgba(40, 96, 224, 0.45);
+  box-shadow: 0 10px 26px rgba(var(--blue-rgb), 0.45);
   cursor: pointer;
   opacity: 0;
   transform: translateY(14px) scale(0.9);
@@ -2928,7 +2897,7 @@ dialog {
   text-transform: uppercase;
   padding: 8px 16px;
   border-radius: 999px;
-  box-shadow: 0 8px 20px rgba(233, 181, 20, 0.4);
+  box-shadow: 0 8px 20px rgba(var(--gold-rgb), 0.4);
 }
 @media (max-width: 900px) {
   .theme-collage {
@@ -2971,7 +2940,7 @@ dialog {
 }
 .sched-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 44px rgba(40, 96, 224, 0.2);
+  box-shadow: 0 20px 44px rgba(var(--blue-rgb), 0.2);
 }
 .sched-ico {
   display: grid;
@@ -3062,7 +3031,7 @@ dialog {
 }
 .ev-card.next {
   border-color: var(--blue);
-  box-shadow: 0 18px 44px rgba(40, 96, 224, 0.25);
+  box-shadow: 0 18px 44px rgba(var(--blue-rgb), 0.25);
 }
 .ev-facts li::before {
   background: var(--blue);
@@ -3086,7 +3055,7 @@ dialog {
   background-position: center;
   background-size: 24px;
   font-size: 0;
-  box-shadow: 0 8px 18px rgba(40, 96, 224, 0.3);
+  box-shadow: 0 8px 18px rgba(var(--blue-rgb), 0.3);
 }
 .sched-card:hover .sched-ico {
   background-color: var(--blue-dark);
@@ -3114,7 +3083,7 @@ dialog {
   border: 1px solid var(--line);
   border-radius: 999px;
   margin-bottom: 26px;
-  box-shadow: 0 8px 22px rgba(26, 36, 86, 0.06);
+  box-shadow: 0 8px 22px rgba(var(--navy-rgb), 0.06);
 }
 .lib-tabs button {
   border: 0;
@@ -3131,7 +3100,7 @@ dialog {
 .lib-tabs button[aria-selected="true"] {
   background: var(--blue);
   color: #fff;
-  box-shadow: 0 8px 18px rgba(40, 96, 224, 0.35);
+  box-shadow: 0 8px 18px rgba(var(--blue-rgb), 0.35);
 }
 .lib-tabs button span {
   display: inline-block;
@@ -3174,8 +3143,8 @@ dialog {
   overflow: hidden;
   background: var(--blue);
   box-shadow:
-    -6px 0 0 rgba(26, 36, 86, 0.18),
-    0 18px 36px rgba(26, 36, 86, 0.22);
+    -6px 0 0 rgba(var(--navy-rgb), 0.18),
+    0 18px 36px rgba(var(--navy-rgb), 0.22);
   transition:
     transform 0.35s,
     box-shadow 0.35s;
@@ -3190,8 +3159,8 @@ dialog {
 .book:hover .book-cover {
   transform: perspective(900px) rotateY(-9deg) translateY(-6px);
   box-shadow:
-    -10px 4px 0 rgba(26, 36, 86, 0.15),
-    0 26px 46px rgba(40, 96, 224, 0.3);
+    -10px 4px 0 rgba(var(--navy-rgb), 0.15),
+    0 26px 46px rgba(var(--blue-rgb), 0.3);
 }
 .book-tile {
   height: 100%;
@@ -3200,7 +3169,7 @@ dialog {
   justify-content: space-between;
   padding: 22px 18px;
   color: #fff;
-  background: radial-gradient(120% 120% at 0% 0%, #4f8dff, var(--blue) 55%, var(--blue-dark));
+  background: radial-gradient(120% 120% at 0% 0%, var(--blue-light), var(--blue) 55%, var(--blue-dark));
 }
 .book-tile b {
   font: 800 1.35rem/1.15 var(--head);
@@ -3312,7 +3281,7 @@ dialog {
 .eyebrow-light,
 .dark .label,
 .card-navy .label {
-  color: #ffe27a;
+  color: var(--gold-light);
   font-weight: 800;
 }
 .contact-list dd a {
@@ -3332,7 +3301,7 @@ dialog {
   color: var(--blue);
 }
 .countdown b {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 .countdown div {
   background: rgba(255, 255, 255, 0.14);
@@ -3355,32 +3324,32 @@ dialog {
 .float-help .hl,
 .lightbox .hl,
 .fr-hero .hl {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 .pillars li {
   font-weight: 800;
   color: #fff;
 }
 .pillars li::after {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 .footer a {
   color: #fff;
   font-weight: 600;
 }
 .fr-hero .tg-kicker {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 .fr-steps li {
   background: rgba(255, 255, 255, 0.16);
   border-color: rgba(255, 255, 255, 0.35);
 }
 .fr-note {
-  color: #ffe27a;
+  color: var(--gold-light);
   font-weight: 600;
 }
 .ev-pill {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 .leader-body .lname {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
@@ -3402,7 +3371,7 @@ dialog {
 .dark h2 em,
 .lead-sec h2 em,
 .card-navy h2 em {
-  color: #ffe27a;
+  color: var(--gold-light);
 }
 @media (max-width: 640px) {
   .float-help {
