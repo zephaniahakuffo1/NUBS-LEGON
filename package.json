@@ -5,8 +5,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "npx --yes serve . -l 3000",
-    "format": "npx --yes prettier --write \"**/*.{html,css,js,json,md}\"",
-    "check": "node --check js/main.js && node --check js/fellowship-data.js"
+    "start": "npx --yes serve public -l 3000",
+    "check": "node scripts/check.js",
+    "format": "npx --yes prettier --write \"public/content/*.js\" \"public/js/*.js\" \"public/css/*.css\" \"scripts/*.js\" \"*.md\" \"docs/*.md\""
   }
 }

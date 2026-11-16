@@ -25,6 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/images/hero_home.jpg" fetchpriority="high">
+  <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/style.css">
   <script type="application/ld+json">
   {
@@ -141,7 +142,7 @@
           </div>
         </article>
         <article class="card word-card">
-          <p class="label">Word for the year <span class="week-of">2026/2027</span></p>
+          <p class="label">Word for the year <span class="week-of" id="weekSession">2026/2027</span></p>
           <blockquote id="weekVerse"></blockquote>
           <p class="verse-ref" id="weekRef"></p>
         </article>
@@ -212,9 +213,9 @@
         <h2 id="actionTitle">A faith that<br><em>moves us forward.</em></h2>
         <p class="muted">The NUBS identity calls us to grow inwardly and reach outwardly. These shared values shape how we learn, worship and serve.</p>
         <div class="theme-collage">
-          <figure class="tc-wide"><img src="assets/images/theme_wide.jpg" alt="Theme of the year: Oikodomeo, a people strengthened onto good works" loading="lazy" decoding="async"></figure>
-          <figure class="tc-square"><img src="assets/images/theme_square.jpg" alt="Oikodomeo 2026/2027, Isaiah 60:22 and Zechariah 12:8" loading="lazy" decoding="async"></figure>
-          <span class="tc-tag">Our theme for 2026/2027</span>
+          <figure class="tc-wide"><img id="themeWide" src="assets/images/theme_wide.jpg" alt="Theme of the year: Oikodomeo, a people strengthened onto good works" loading="lazy" decoding="async"></figure>
+          <figure class="tc-square"><img id="themeSquare" src="assets/images/theme_square.jpg" alt="Oikodomeo 2026/2027, Isaiah 60:22 and Zechariah 12:8" loading="lazy" decoding="async"></figure>
+          <span class="tc-tag" id="themeSession">Our theme for 2026/2027</span>
         </div>
       </div>
       <ol class="action-list">
@@ -523,7 +524,20 @@
   <p id="lightCap"></p>
 </dialog>
 
-<script src="js/fellowship-data.js"></script>
+<!-- CONTENT. Each file in content/ fills in one part of NUBS_DATA. Order does not matter,
+     but all of them must come after the first line and before main.js. -->
+<script>window.NUBS_DATA = {};</script>
+<script src="content/site.js"></script>
+<script src="content/schedule.js"></script>
+<script src="content/auxiliaries.js"></script>
+<script src="content/quiz.js"></script>
+<script src="content/books.js"></script>
+<script src="content/sermons.js"></script>
+<script src="content/freshers.js"></script>
+<script src="content/events.js"></script>
+<script src="content/notices.js"></script>
+<script src="content/leaders.js"></script>
+<script src="content/gallery.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 {
   "name": "nubs-legon",
   "compatibility_date": "2026-11-01",
+  // Safety gate: Cloudflare runs the site check before every publish. If the check finds a
+  // problem, the publish stops and the previous working site stays live.
+  "build": {
+    "command": "node scripts/check.js"
+  },
   "assets": {
     "directory": "./public",
     "not_found_handling": "404-page"
