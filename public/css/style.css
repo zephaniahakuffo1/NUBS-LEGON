@@ -18,6 +18,7 @@
      "Freshers"  "Events"  "Leadership"  "Gallery"  "Contact"  "Footer"
      "Floating button, dialogs"  "Responsive"  "library"  "scroll buttons"
      "readability on blue"  "phones"  "Pages" (page banner, explore cards, next page)
+     "Affiliations"  "Motion" (page transitions, reveal, glow)
 
    BREAKPOINTS: 1100px (tablet landscape), 980px (tablet, mobile menu),
                 900px, 720px and 640px (phones), 600px.
@@ -3640,6 +3641,276 @@ dialog {
   color: var(--muted);
 }
 
+/* ---- Affiliations: the family chain, sector buttons, campus tiles ---- */
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 26px;
+}
+.family {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 880px;
+}
+/* A line joins each body to the one below it */
+.family-step + .family-step {
+  position: relative;
+  padding-top: 54px;
+}
+.family-step + .family-step::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  height: 42px;
+  border-left: 3px dotted var(--blue);
+  translate: -1.5px 0;
+}
+.family-step + .family-step::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  width: 12px;
+  height: 12px;
+  border-right: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  translate: -6px 0;
+  rotate: 45deg;
+}
+.family-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(16px, 3vw, 28px);
+  align-items: start;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+a.family-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(var(--blue-rgb), 0.18);
+}
+.family-badge {
+  display: grid;
+  place-items: center;
+  width: clamp(60px, 9vw, 80px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font: 800 clamp(13px, 1.8vw, 17px) var(--head);
+  letter-spacing: 0.02em;
+  box-shadow: 0 10px 24px rgba(var(--blue-rgb), 0.3);
+}
+.family-body h3 {
+  margin: 4px 0 10px;
+}
+.family-body > p:not(.label) {
+  color: var(--muted);
+  margin: 0;
+}
+.family-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+.family-facts li {
+  background: var(--mist);
+  color: var(--blue);
+  font: 600 12px var(--head);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.family-go {
+  display: inline-block;
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--blue);
+  transition: translate 0.25s;
+}
+a.family-card:hover .family-go {
+  translate: 6px 0;
+}
+.family-step.is-us .family-card {
+  background: var(--blue);
+  color: #fff;
+}
+.family-step.is-us .family-badge {
+  background: var(--gold);
+  color: var(--navy);
+}
+.family-step.is-us .family-body > p:not(.label),
+.family-step.is-us .family-go {
+  color: #fff;
+}
+.family-step.is-us .label {
+  color: var(--gold-light);
+}
+.family-step.is-us .family-facts li {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.family-step.is-us h3 {
+  color: #fff;
+}
+
+.sector-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 12px;
+  margin-bottom: 26px;
+}
+@media (max-width: 560px) {
+  .sector-pick {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sector-pick > :first-child {
+    grid-column: 1 / -1;
+  }
+  .family-card {
+    grid-template-columns: 1fr;
+  }
+}
+.sector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: calc(var(--radius) * 0.75);
+  background: #fff;
+  color: var(--ink);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+.sector:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+.sector b {
+  font-family: var(--head);
+  color: var(--navy);
+}
+.sector span {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.sector em {
+  align-self: flex-start;
+  margin-top: 6px;
+  font: 700 11px var(--head);
+  font-style: normal;
+  color: var(--blue);
+  background: var(--mist);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.sector[aria-pressed="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.sector[aria-pressed="true"] b,
+.sector[aria-pressed="true"] span {
+  color: #fff;
+}
+.sector[aria-pressed="true"] em {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.campus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+.campus {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 230px;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.campus-short {
+  font: 800 clamp(1.9rem, 3.2vw, 2.4rem) var(--head);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+.campus h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+.campus-school {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0;
+}
+.campus-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+.campus-go {
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+}
+.campus.has-link .campus-go,
+a.campus-go {
+  color: var(--blue);
+  font-weight: 700;
+}
+a.campus:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(var(--blue-rgb), 0.18);
+}
+.campus.is-us {
+  background: var(--blue);
+  color: #fff;
+}
+.campus.is-us .campus-short,
+.campus.is-us .campus-go {
+  color: var(--gold);
+}
+.campus.is-us h3 {
+  color: #fff;
+}
+.campus.is-us .campus-school,
+.campus.is-us .campus-meta {
+  color: #fff;
+}
+.campus-more {
+  background: transparent;
+  border: 2px dashed rgba(var(--blue-rgb), 0.3);
+  box-shadow: none;
+}
+.campus-more .campus-short {
+  color: var(--gold-dark);
+}
+
 /* ---- Motion: page transitions, entrances, scroll reveal, hover life ---- */
 /* Everything here switches off for visitors whose phone asks for less motion.
    The scroll reveal only happens when main.js adds the "motion" class, so
@@ -3732,7 +4003,8 @@ dialog {
   /* New photos, sermons and books pop in when a filter or "show more" adds them */
   .motion .gallery > .shot,
   .motion .sermon-list > .sermon,
-  .motion .book-grid > .book {
+  .motion .book-grid > .book,
+  .motion .campus-grid > .campus {
     animation: pop 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
     animation-delay: calc(var(--n, 0) * 45ms);
   }

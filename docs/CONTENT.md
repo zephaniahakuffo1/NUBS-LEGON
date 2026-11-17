@@ -45,6 +45,7 @@ instructions at the top.
 | `notices.js` | Announcements | /events |
 | `leaders.js` | Leadership names and photos | /leadership |
 | `gallery.js` | Gallery photos | /gallery |
+| `affiliations.js` | Ghana Baptist Convention, NUBS Ghana, and NUBS unions on other campuses | /affiliations |
 
 The fixed words on a page (headings, the welcome text) are in that page's file in `public/`, for example
 `public/about.html`. The menu and footer are the same on every page: change them only in `public/index.html`,

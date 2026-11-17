@@ -40,6 +40,7 @@ function raf(fn) {
      renderLeaders      leadership cards + animated paragraph
      renderGallery      photo grid, filters, lightbox
      renderContact      contact details and social links
+     renderAffiliations Convention > NUBS Ghana > NUBS Legon chain; renderCampuses = sister unions + sector filter
      setupDialogs       join, help desk and photo pop-ups; setupHelpdesk = its WhatsApp button
      setupForms         join and prayer forms (open WhatsApp, validate numbers)
      setupMotion        scroll reveal, glow and lean on hover, reading progress line
@@ -83,7 +84,10 @@ function raf(fn) {
   }
   // A content file with a typing mistake does not load at all. Its list is treated as empty here,
   // so only that part of the page is affected and everything else still works.
-  const LISTS = "serviceSchedule auxiliaries quiz books sermons events notices leaders gallery".split(" ");
+  const LISTS =
+    "serviceSchedule auxiliaries quiz books sermons events notices leaders gallery affiliations campusUnions nubsSectors".split(
+      " "
+    );
   LISTS.forEach((key) => {
     if (Array.isArray(D[key])) return;
     console.error(`Content "${key}" did not load. Run "npm run check" to find the mistake.`);
@@ -171,11 +175,17 @@ function raf(fn) {
     if (el) fn(el);
   }
 
-  // Lights up the current page in the menu and the footer.
+  // Lights up the current page in the menu and the footer. A page that sits under another one
+  // (Affiliations is under About us) also lights up its parent in the menu, found from the breadcrumb.
   function setupPages() {
     const here = location.pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+    const parents = $$(".crumbs a")
+      .map((a) => a.getAttribute("href"))
+      .filter((p) => p !== "/");
     $$("#nav a, .footer nav a").forEach((a) => {
-      if (a.getAttribute("href") === here) a.setAttribute("aria-current", "page");
+      const href = a.getAttribute("href");
+      if (href === here || (a.closest("#nav") && parents.includes(href)))
+        a.setAttribute("aria-current", "page");
     });
   }
 
@@ -1075,6 +1085,117 @@ function raf(fn) {
     $("#prayerNote").textContent = D.forms.prayerPrivacyNote;
   }
 
+  /* ---------- Affiliations ------------------------------------------------------ */
+
+  // Other websites open in a new tab; pages of this site (like /about) open in the same tab.
+  const linkAttrs = (url) =>
+    /^https?:/.test(url) ? { href: url, target: "_blank", rel: "noopener" } : { href: url };
+  const domain = (url) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+
+  function renderAffiliations() {
+    const list = $("#familyTree");
+    D.affiliations.forEach((a, i) => {
+      const last = i === D.affiliations.length - 1;
+      const inner = [
+        h("span", { class: "family-badge", "aria-hidden": "true", text: a.short }),
+        h(
+          "div",
+          { class: "family-body" },
+          h("p", { class: "label", text: a.role }),
+          h("h3", {}, a.name),
+          h("p", { text: a.text }),
+          a.facts && a.facts.length
+            ? h(
+                "ul",
+                { class: "family-facts" },
+                a.facts.map((f) => h("li", { text: f }))
+              )
+            : null,
+          a.url
+            ? h("span", {
+                class: "family-go",
+                text: /^https?:/.test(a.url) ? `Visit ${domain(a.url)} \u2197` : "Read about us \u2192",
+              })
+            : null
+        ),
+      ];
+      list.append(
+        h(
+          "li",
+          { class: "family-step" + (last ? " is-us" : "") },
+          a.url
+            ? h("a", { class: "card family-card", ...linkAttrs(a.url) }, inner)
+            : h("div", { class: "card family-card" }, inner)
+        )
+      );
+    });
+  }
+
+  function renderCampuses() {
+    const grid = $("#campusGrid");
+    const pick = $("#sectorPick");
+    let current = "All";
+
+    function tile(c) {
+      const kids = [
+        h("span", { class: "campus-short", "aria-hidden": "true", text: c.short }),
+        h("h3", {}, c.name),
+        h("p", { class: "campus-school", text: c.school }),
+        h("p", { class: "campus-meta", text: `${c.place} \u00B7 ${c.sector} sector` }),
+        h("span", {
+          class: "campus-go",
+          text: c.here ? "You are here" : c.url ? `Visit ${domain(c.url)} \u2197` : "Website coming soon",
+        }),
+      ];
+      const cls = "card campus glow" + (c.here ? " is-us" : "") + (c.url ? " has-link" : "");
+      return c.url && !c.here
+        ? h("a", { class: cls, ...linkAttrs(c.url) }, kids)
+        : h("article", { class: cls }, kids);
+    }
+    // The last tile stands for the many local unions not listed yet.
+    const rest = h(
+      "article",
+      { class: "card campus campus-more glow" },
+      h("span", { class: "campus-short", "aria-hidden": "true", text: "50+" }),
+      h("h3", { text: "And many more" }),
+      h("p", {
+        class: "campus-school",
+        text: "Local unions in universities, technical universities and colleges of education in every sector.",
+      }),
+      h("a", { class: "campus-go", href: "/contact" }, "Know a campus we missed? Tell us \u2192")
+    );
+
+    const draw = () =>
+      grid.replaceChildren(
+        ...D.campusUnions.filter((c) => current === "All" || c.sector === current).map(tile),
+        rest
+      );
+    const count = (name) => D.campusUnions.filter((c) => name === "All" || c.sector === name).length;
+    [{ name: "All", regions: "Every campus listed here" }, ...D.nubsSectors].forEach((s) =>
+      pick.append(
+        h(
+          "button",
+          {
+            class: "sector",
+            type: "button",
+            "aria-pressed": String(s.name === current),
+            onclick: (e) => {
+              current = s.name;
+              $$(".sector", pick).forEach((b) =>
+                b.setAttribute("aria-pressed", String(b === e.currentTarget))
+              );
+              draw();
+            },
+          },
+          h("b", { text: s.name === "All" ? "All sectors" : s.name }),
+          h("span", { text: s.regions }),
+          h("em", { text: `${count(s.name)} listed` })
+        )
+      )
+    );
+    draw();
+  }
+
   /* ---------- Dialogs ------------------------------------------------------------ */
 
   function setupDialogs() {
@@ -1207,6 +1328,7 @@ function raf(fn) {
       ".contact-list > div",
       ".social",
       ".cross-link",
+      ".sector-pick",
     ].join(",");
     const io = new IntersectionObserver(
       (entries) => {
@@ -1228,7 +1350,9 @@ function raf(fn) {
       { rootMargin: "0px 0px -8% 0px" }
     );
     $$(REVEAL)
-      .filter((el) => !el.closest(".hero, .page-hero, dialog") && !el.parentElement.closest(REVEAL))
+      .filter(
+        (el) => !el.closest(".hero, .page-hero, dialog, .campus-grid") && !el.parentElement.closest(REVEAL)
+      )
       .forEach((el) => {
         el.classList.add("reveal");
         io.observe(el);
@@ -1237,7 +1361,7 @@ function raf(fn) {
     // Photos, sermons and books added by a filter or "show more" pop in one after another.
     const stagger = (nodes) =>
       nodes.filter((n) => n.nodeType === 1).forEach((n, i) => n.style.setProperty("--n", Math.min(i, 12)));
-    $$(".gallery, .sermon-list, .book-grid").forEach((list) => {
+    $$(".gallery, .sermon-list, .book-grid, .campus-grid").forEach((list) => {
       stagger([...list.children]);
       new MutationObserver((muts) => stagger(muts.flatMap((m) => [...m.addedNodes]))).observe(list, {
         childList: true,
@@ -1259,9 +1383,10 @@ function raf(fn) {
 
     // Mouse only (not touch): cards glow where the pointer is, buttons lean towards it.
     if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    $$(".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice").forEach(
-      (el) => el.classList.add("glow")
-    );
+    // (.campus tiles are redrawn by the sector buttons, so they carry "glow" from the start.)
+    $$(
+      ".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice, .family-card, .sector"
+    ).forEach((el) => el.classList.add("glow"));
     let leaning = null;
     document.addEventListener(
       "pointermove",
@@ -1347,6 +1472,8 @@ function raf(fn) {
     [renderLeaders, "#leaderList"],
     [renderGallery, "#galleryGrid"],
     [renderContact, "#contactList"],
+    [renderAffiliations, "#familyTree"],
+    [renderCampuses, "#campusGrid"],
     [setupForms],
     [setupMotion],
     [highlightKeywords], // keep this last: it scans the finished page

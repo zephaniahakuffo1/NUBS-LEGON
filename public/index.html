@@ -61,7 +61,12 @@
         "description": "The Baptist student fellowship at the University of Ghana, Legon. One faith. One family. Empowered for action.",
         "email": "nubslegon080@gmail.com",
         "telephone": "+233536841622",
-        "parentOrganization": { "@type": "Organization", "name": "National Union of Baptist Students, Ghana", "url": "https://www.nubsghana.com" },
+        "parentOrganization": {
+          "@type": "Organization",
+          "name": "National Union of Baptist Students, Ghana",
+          "url": "https://www.nubsghana.com",
+          "parentOrganization": { "@type": "Organization", "name": "Ghana Baptist Convention", "url": "https://ghanabaptistconvention.com/" }
+        },
         "address": { "@type": "PostalAddress", "addressLocality": "Legon, Accra", "addressRegion": "Greater Accra", "addressCountry": "GH" },
         "location": { "@type": "Place", "name": "University of Ghana, Legon", "sameAs": "https://www.ug.edu.gh" },
         "sameAs": [
@@ -191,7 +196,7 @@
         <p class="head-note">Everything about the fellowship, one tap away.</p>
       </div>
       <div class="explore-grid">
-        <a class="card explore-card" href="/about"><b>About us</b><span>Who we are, what we believe and our theme of the year.</span><i aria-hidden="true">&rarr;</i></a>
+        <a class="card explore-card" href="/about"><b>About us</b><span>Who we are, our affiliations and our theme of the year.</span><i aria-hidden="true">&rarr;</i></a>
         <a class="card explore-card" href="/auxiliaries"><b>Our auxiliaries</b><span>Find the place where your gifts fit.</span><i aria-hidden="true">&rarr;</i></a>
         <a class="card explore-card" href="/sermons"><b>Sermons</b><span>Catch up on messages you missed.</span><i aria-hidden="true">&rarr;</i></a>
         <a class="card explore-card" href="/library"><b>Library</b><span>Books to grow your faith.</span><i aria-hidden="true">&rarr;</i></a>
@@ -223,6 +228,7 @@
     </div>
     <nav aria-label="Footer"><ul>
       <li><a href="/about">About us</a></li>
+      <li><a href="/affiliations">Affiliations</a></li>
       <li><a href="/auxiliaries">Auxiliaries</a></li>
       <li><a href="/sermons">Sermons</a></li>
       <li><a href="/library">Library</a></li>
@@ -299,6 +305,7 @@
 <script src="content/notices.js"></script>
 <script src="content/leaders.js"></script>
 <script src="content/gallery.js"></script>
+<script src="content/affiliations.js"></script>
 <script src="js/main.js"></script>
 <!-- /SHARED BOTTOM -->
 </body>

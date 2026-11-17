@@ -182,6 +182,9 @@ const HOME = {
   notices: "notices.js",
   leadersParagraph: "leaders.js",
   leaders: "leaders.js",
+  affiliations: "affiliations.js",
+  campusUnions: "affiliations.js",
+  nubsSectors: "affiliations.js",
   gallery: "gallery.js",
 };
 for (const [key, file] of Object.entries(HOME))
@@ -354,6 +357,34 @@ if (needList("content/leaders.js", "leaders", D.leaders)) {
     needText(w, l, "role");
     optionalText(w, l, "name", "imageAlt");
     needFile(w, "image", l.image, { picture: true });
+  });
+}
+
+if (needList("content/affiliations.js", "affiliations", D.affiliations)) {
+  D.affiliations.forEach((a, i) => {
+    const w = label("affiliations.js", "affiliations", i, a.name);
+    knownKeys(w, a, ["short", "name", "role", "text", "facts", "url"]);
+    needText(w, a, "short", "name", "role", "text");
+    if (a.facts !== undefined && (!Array.isArray(a.facts) || !a.facts.every(filled)))
+      problem(w, `"facts" should be a list of short words, like ["Since 1964", "30 associations"].`);
+    if (filled(a.url) && !a.url.startsWith("/")) needLink(w, "url", a.url);
+  });
+}
+const SECTORS = Array.isArray(D.nubsSectors) ? D.nubsSectors.map((s) => s && s.name) : [];
+if (needList("content/affiliations.js", "nubsSectors", D.nubsSectors))
+  D.nubsSectors.forEach((s, i) => {
+    const w = label("affiliations.js", "nubsSectors", i, s.name);
+    knownKeys(w, s, ["name", "regions"]);
+    needText(w, s, "name", "regions");
+  });
+if (needList("content/affiliations.js", "campusUnions", D.campusUnions)) {
+  D.campusUnions.forEach((c, i) => {
+    const w = label("affiliations.js", "campusUnions", i, c.name);
+    knownKeys(w, c, ["short", "name", "school", "place", "sector", "url", "here"]);
+    needText(w, c, "short", "name", "school", "place", "sector");
+    if (filled(c.sector) && SECTORS.length && !SECTORS.includes(c.sector))
+      problem(w, `"sector" says "${c.sector}". It must be one of: ${SECTORS.join(", ")}.`);
+    needLink(w, "url", c.url);
   });
 }
 

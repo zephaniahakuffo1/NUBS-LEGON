@@ -29,9 +29,11 @@ every content, theme or id change, and also confirm the affected section still r
 
 ## Architecture
 
-- Ten pages, one HTML file each, served at clean URLs (`about.html` -> `/about`): `index.html` (home: hero,
-  this week, schedule, explore cards), `about`, `auxiliaries` (with the quiz), `sermons`, `library`, `freshers`,
-  `events` (with notices), `leadership`, `gallery`, `contact`. Each holds its own `<title>`, description,
+- Eleven pages, one HTML file each, served at clean URLs (`about.html` -> `/about`): `index.html` (home: hero,
+  this week, schedule, explore cards), `about`, `affiliations` (under About: GBC > NUBS Ghana > NUBS Legon chain
+  and sister campus unions with a sector filter), `auxiliaries` (with the quiz), `sermons`, `library`,
+  `freshers`, `events` (with notices), `leadership`, `gallery`, `contact`. "Next page" chain: home > about >
+  affiliations > auxiliaries > sermons > library > freshers > events > leadership > gallery > contact > home. Each holds its own `<title>`, description,
   canonical, OG tags and JSON-LD (Organization/WebSite on home, BreadcrumbList elsewhere), a page banner
   (`.ev-hero.page-hero` with the page's only `h1`), its sections, and a "Next page" band before the footer.
 - Three blocks are identical on every page, between `<!-- SHARED HEAD: -->`, `<!-- SHARED TOP: -->` and
@@ -42,7 +44,8 @@ every content, theme or id change, and also confirm the affected section still r
   independent: a syntax error in one leaves only its own key missing.
 - `public/content/*.js`: `site.js` (`site`, `contact`, `yearTheme`, `forms`), `schedule.js` (`serviceSchedule`),
   `auxiliaries.js`, `quiz.js`, `books.js`, `sermons.js` (`sermonChannel`, `sermons`), `freshers.js`, `events.js`,
-  `notices.js`, `leaders.js` (`leadersParagraph`, `leaders`), `gallery.js`. Each starts with a plain-English
+  `notices.js`, `leaders.js` (`leadersParagraph`, `leaders`), `gallery.js`, `affiliations.js` (`affiliations`,
+  `campusUnions`, `nubsSectors`; a campus `url` is optional and makes its tile a link). Each starts with a plain-English
   banner for non-technical editors; keep that style.
 - `public/js/main.js` is one IIFE that reads `window.NUBS_DATA`, defaults missing lists to `[]`, and runs a fixed
   list of `render*()` / `setup*()` functions at the bottom, each inside try/catch so one failure cannot stop the
