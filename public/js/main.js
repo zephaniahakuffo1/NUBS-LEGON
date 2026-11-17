@@ -42,6 +42,7 @@ function raf(fn) {
      renderContact      contact details and social links
      setupDialogs       join, help desk and photo pop-ups; setupHelpdesk = its WhatsApp button
      setupForms         join and prayer forms (open WhatsApp, validate numbers)
+     setupMotion        scroll reveal, glow and lean on hover, reading progress line
      highlightKeywords  yellow highlight for "NUBS" and "Christ"
      (bottom)           scroll up / scroll down buttons
 
@@ -1174,6 +1175,118 @@ function raf(fn) {
     );
   }
 
+  /* ---------- Motion -------------------------------------------------------------
+     Cards slide up as they scroll into view, new photos/sermons/books pop in, cards
+     glow where the pointer is, buttons lean towards it, and a thin line under the menu
+     shows how far down the page you are. Page-to-page transitions are pure CSS
+     (search "Motion" in style.css). All of it is skipped when the phone asks for less motion. */
+
+  function setupMotion() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.documentElement.classList.add("motion");
+
+    const REVEAL = [
+      ".head",
+      ".card",
+      ".sched-card",
+      ".aux-card",
+      ".tg-card",
+      ".ev-card",
+      ".notice",
+      ".leader",
+      ".explore-card",
+      ".next-link",
+      ".fr-hero",
+      ".fr-contact",
+      ".faq",
+      ".photo-frame",
+      ".about-copy",
+      ".action-list li",
+      ".motto",
+      ".theme-collage",
+      ".contact-list > div",
+      ".social",
+      ".cross-link",
+    ].join(",");
+    const io = new IntersectionObserver(
+      (entries) => {
+        let i = 0;
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          io.unobserve(el);
+          const d = Math.min(i++ * 70, 420); // cards that arrive together come in one after another
+          el.style.setProperty("--d", `${d}ms`);
+          el.classList.add("in");
+          // Afterwards the element goes back to its normal styles (so hover effects work as before).
+          setTimeout(() => {
+            el.classList.remove("reveal", "in");
+            el.style.removeProperty("--d");
+          }, 900 + d);
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    $$(REVEAL)
+      .filter((el) => !el.closest(".hero, .page-hero, dialog") && !el.parentElement.closest(REVEAL))
+      .forEach((el) => {
+        el.classList.add("reveal");
+        io.observe(el);
+      });
+
+    // Photos, sermons and books added by a filter or "show more" pop in one after another.
+    const stagger = (nodes) =>
+      nodes.filter((n) => n.nodeType === 1).forEach((n, i) => n.style.setProperty("--n", Math.min(i, 12)));
+    $$(".gallery, .sermon-list, .book-grid").forEach((list) => {
+      stagger([...list.children]);
+      new MutationObserver((muts) => stagger(muts.flatMap((m) => [...m.addedNodes]))).observe(list, {
+        childList: true,
+      });
+    });
+
+    // Reading progress line, and a shadow under the menu once the page has moved.
+    const bar = h("div", { class: "scroll-bar", "aria-hidden": "true" });
+    document.body.append(bar);
+    const header = $(".header");
+    const sync = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.setProperty("--p", max > 0 ? (scrollY / max).toFixed(4) : "0");
+      header.classList.toggle("scrolled", scrollY > 8);
+    };
+    addEventListener("scroll", raf(sync), { passive: true });
+    addEventListener("resize", sync);
+    sync();
+
+    // Mouse only (not touch): cards glow where the pointer is, buttons lean towards it.
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    $$(".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice").forEach(
+      (el) => el.classList.add("glow")
+    );
+    let leaning = null;
+    document.addEventListener(
+      "pointermove",
+      (e) => {
+        const t = e.target instanceof Element ? e.target : null;
+        const card = t && t.closest(".glow");
+        if (card) {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+          card.style.setProperty("--my", `${e.clientY - r.top}px`);
+        }
+        const btn = t && t.closest(".btn");
+        if (leaning && leaning !== btn) leaning.style.translate = "";
+        leaning = btn;
+        if (btn) {
+          const r = btn.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width - 0.5) * 8;
+          const y = ((e.clientY - r.top) / r.height - 0.5) * 6;
+          btn.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+        }
+      },
+      { passive: true }
+    );
+  }
+
   /* ---------- Highlight "NUBS" and "Christ" in yellow, everywhere ---------------- */
 
   function highlightKeywords() {
@@ -1235,6 +1348,7 @@ function raf(fn) {
     [renderGallery, "#galleryGrid"],
     [renderContact, "#contactList"],
     [setupForms],
+    [setupMotion],
     [highlightKeywords], // keep this last: it scans the finished page
   ].forEach(([step, onlyIf]) => {
     if (onlyIf && !$(onlyIf)) return;
