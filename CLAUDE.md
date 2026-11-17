@@ -83,6 +83,8 @@ every content, theme or id change, and also confirm the affected section still r
   (`?s=` URLs) are expected and need no fix.
 - Name variants people search for (NUBS UG, NUBS University of Ghana, Baptist students University of Ghana) are in
   the `<title>`, meta description, About lead, footer line and JSON-LD `alternateName`. Keep them when editing copy.
+- `public/cf1aaa23c38afb03e16d9ef57022624e.txt` is the IndexNow key (Bing, Yandex, etc.). Keep it. After a big content change, ping
+  `https://api.indexnow.org/indexnow?url=https://nubslegon.com/&key=cf1aaa23c38afb03e16d9ef57022624e`. Update `<lastmod>` in `sitemap.xml` too.
 - If link previews stop working, Cloudflare's Bot Fight Mode / "Block AI bots" may be blocking crawlers.
 - Marketing links use `?s=<channel>` query tags (e.g. `?s=church`) to attribute traffic in Cloudflare Analytics.
   Don't strip or break query-string handling.
