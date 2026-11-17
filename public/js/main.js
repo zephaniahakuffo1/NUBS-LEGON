@@ -167,6 +167,35 @@ function raf(fn) {
         btn.setAttribute("aria-expanded", "false");
       }
     });
+
+    // Drop-down menus (About us > About us / Affiliations): a click opens or closes one;
+    // a click anywhere else or the Escape key closes it.
+    document.documentElement.classList.add("js");
+    const groups = $$(".nav-group", nav);
+    const setOpen = (g, open) => {
+      g.classList.toggle("open", open);
+      $(".nav-drop", g).setAttribute("aria-expanded", String(open));
+    };
+    groups.forEach((g) =>
+      $(".nav-drop", g).addEventListener("click", () => {
+        const open = !g.classList.contains("open");
+        groups.forEach((o) => setOpen(o, false));
+        setOpen(g, open);
+      })
+    );
+    document.addEventListener("click", (e) => {
+      groups.forEach((g) => {
+        if (!g.contains(e.target) || e.target.closest(".nav-sub a")) setOpen(g, false);
+      });
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      groups.forEach((g) => {
+        if (!g.classList.contains("open")) return;
+        setOpen(g, false);
+        $(".nav-drop", g).focus();
+      });
+    });
   }
 
   // Runs fn(element) only when this page has that element.
@@ -175,18 +204,14 @@ function raf(fn) {
     if (el) fn(el);
   }
 
-  // Lights up the current page in the menu and the footer. A page that sits under another one
-  // (Affiliations is under About us) also lights up its parent in the menu, found from the breadcrumb.
+  // Lights up the current page in the menu and the footer. When the page is inside a drop-down
+  // (About us, Affiliations), the drop-down's own button lights up too.
   function setupPages() {
     const here = location.pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1");
-    const parents = $$(".crumbs a")
-      .map((a) => a.getAttribute("href"))
-      .filter((p) => p !== "/");
     $$("#nav a, .footer nav a").forEach((a) => {
-      const href = a.getAttribute("href");
-      if (href === here || (a.closest("#nav") && parents.includes(href)))
-        a.setAttribute("aria-current", "page");
+      if (a.getAttribute("href") === here) a.setAttribute("aria-current", "page");
     });
+    $$(".nav-group").forEach((g) => g.classList.toggle("is-current", !!$("a[aria-current]", g)));
   }
 
   function renderChrome() {

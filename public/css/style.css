@@ -4132,3 +4132,125 @@ a.campus:hover {
     scale: 0.97;
   }
 }
+
+/* ---- Menu drop-down: About us > About us / Affiliations ---------------- */
+.nav-group {
+  position: relative;
+}
+.nav-drop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 13.5px var(--head);
+  color: var(--navy);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.nav-drop:hover,
+.nav-group.open .nav-drop,
+.nav-group.is-current .nav-drop {
+  background: var(--mist);
+  color: var(--blue);
+}
+.nav-drop svg {
+  transition: rotate 0.25s;
+}
+.nav-group.open .nav-drop svg {
+  rotate: 180deg;
+}
+.nav-sub {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  translate: -50% 0;
+  width: 300px;
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(var(--navy-rgb), 0.16);
+  z-index: 70;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transform-origin: 50% 0;
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
+    visibility 0s 0.25s;
+}
+/* (Without JavaScript the list still opens when the button is focused.) */
+.nav-group.open .nav-sub,
+html:not(.js) .nav-group:focus-within .nav-sub {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+.nav .nav-sub a {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  white-space: normal;
+  text-decoration: none;
+  color: var(--navy);
+}
+.nav .nav-sub a b {
+  font: 700 14px var(--head);
+}
+.nav .nav-sub a span {
+  font: 400 12.5px var(--font);
+  line-height: 1.4;
+  color: var(--muted);
+}
+.nav .nav-sub a:hover,
+.nav .nav-sub a[aria-current="page"] {
+  background: var(--mist);
+  color: var(--blue);
+}
+@media (max-width: 980px) {
+  /* In the phone menu the list opens in place, under "About us" */
+  .nav-drop {
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13.5px;
+  }
+  .nav-drop:hover,
+  .nav-group.open .nav-drop,
+  .nav-group.is-current .nav-drop {
+    background: none;
+  }
+  .nav-sub {
+    position: static;
+    translate: none;
+    width: auto;
+    display: none;
+    padding: 4px 0 8px 14px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .nav-group.open .nav-sub,
+  html:not(.js) .nav-group:focus-within .nav-sub {
+    display: grid;
+    animation: rise 0.3s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+  }
+  .nav .nav-sub a {
+    padding: 10px 12px;
+  }
+}
