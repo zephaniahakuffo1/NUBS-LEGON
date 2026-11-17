@@ -1,6 +1,8 @@
 /* ==========================================================================
    NUBS LEGON CONTENT: AFFILIATIONS (the /affiliations page)
    --------------------------------------------------------------------------
+   0. MOTHER CHURCH  Legon Baptist Church, shown first on the page. "url" makes
+                 the card open their website.
    1. FAMILY     the bodies NUBS Legon belongs to, from the biggest down.
                  Each one is a big card. "url" makes the card open their website.
    2. CAMPUSES   NUBS local unions on other campuses. One tile each.
@@ -24,6 +26,20 @@
    When you are done, run:  npm run check
    It tells you in plain words if something is wrong.
    ========================================================================== */
+
+/* 0. MOTHER CHURCH -------------------------------------------------------- */
+NUBS_DATA.motherChurch = {
+  short: "LBC",
+  name: "Legon Baptist Church",
+  text: "Legon Baptist Church is our mother church: the local Baptist congregation that NUBS Legon calls home, right here in Legon. Students are welcome to worship with the church family on Sundays.",
+  // Short facts shown beside the text. Each has a label and a value.
+  details: [
+    { label: "Where", value: "Staff Village, behind Legon Police Station, Legon, Accra" },
+    { label: "Sunday", value: "Worship service, 8:00 to 11:00 AM (English and Twi)" },
+    { label: "Motto", value: "The Sovereign God, Is Our Strength" },
+  ],
+  url: "https://www.legonbaptistchurch.com/",
+};
 
 /* 1. FAMILY ---------------------------------------------------------------- */
 NUBS_DATA.affiliations = [

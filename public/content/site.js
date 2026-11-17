@@ -52,8 +52,8 @@ NUBS_DATA.contact = {
    session       shown beside "Word for the year" and under the theme pictures.
    verse         the word for the year, shown in the "This week" card.
    reference     where the verse is found.
-   wideImage     the wide theme picture. squareImage is the square one.
-   wideAlt, squareAlt   a few words describing each picture (for blind visitors).
+   wideImage     the theme picture on the About page.
+   wideAlt       a few words describing the picture (for blind visitors).
    To change a picture: put the new file in public/assets/images/ with a NEW
    name (for example theme_wide_2027.jpg) and type that name here. */
 NUBS_DATA.yearTheme = {
@@ -63,8 +63,6 @@ NUBS_DATA.yearTheme = {
   reference: "Isaiah 60:22 (KJV)",
   wideImage: "assets/images/theme_wide.jpg",
   wideAlt: "Theme of the year: Oikodomeo, a people strengthened onto good works",
-  squareImage: "assets/images/theme_square.jpg",
-  squareAlt: "Oikodomeo 2026/2027, Isaiah 60:22 and Zechariah 12:8",
 };
 
 /* 4. SMALL NOTES ON FORMS ------------------------------------------------------ */

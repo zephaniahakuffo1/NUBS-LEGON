@@ -185,6 +185,7 @@ const HOME = {
   affiliations: "affiliations.js",
   campusUnions: "affiliations.js",
   nubsSectors: "affiliations.js",
+  motherChurch: "affiliations.js",
   gallery: "gallery.js",
 };
 for (const [key, file] of Object.entries(HOME))
@@ -224,7 +225,6 @@ if (needObject("content/site.js", "yearTheme", D.yearTheme)) {
   const w = "content/site.js > yearTheme";
   needText(w, D.yearTheme, "session", "verse", "reference");
   needFile(w, "wideImage", D.yearTheme.wideImage, { picture: true });
-  needFile(w, "squareImage", D.yearTheme.squareImage, { picture: true });
 }
 
 if (needObject("content/site.js", "forms", D.forms)) needText("content/site.js > forms", D.forms, "prayerPrivacyNote");
@@ -360,6 +360,15 @@ if (needList("content/leaders.js", "leaders", D.leaders)) {
   });
 }
 
+if (needObject("content/affiliations.js", "motherChurch", D.motherChurch)) {
+  const m = D.motherChurch;
+  const w = "content/affiliations.js > motherChurch";
+  knownKeys(w, m, ["short", "name", "text", "details", "url"]);
+  needText(w, m, "short", "name", "text");
+  if (m.details !== undefined && (!Array.isArray(m.details) || !m.details.every((d) => d && filled(d.label) && filled(d.value))))
+    problem(w, `"details" should be a list like [{ label: "Where", value: "Staff Village, Legon" }].`);
+  needLink(w, "url", m.url);
+}
 if (needList("content/affiliations.js", "affiliations", D.affiliations)) {
   D.affiliations.forEach((a, i) => {
     const w = label("affiliations.js", "affiliations", i, a.name);

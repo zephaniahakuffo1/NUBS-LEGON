@@ -40,6 +40,7 @@ function raf(fn) {
      renderLeaders      leadership cards + animated paragraph
      renderGallery      photo grid, filters, lightbox
      renderContact      contact details and social links
+     renderMotherChurch Legon Baptist Church card
      renderAffiliations Convention > NUBS Ghana > NUBS Legon chain; renderCampuses = sister unions + sector filter
      setupDialogs       join, help desk and photo pop-ups; setupHelpdesk = its WhatsApp button
      setupForms         join and prayer forms (open WhatsApp, validate numbers)
@@ -320,7 +321,6 @@ function raf(fn) {
       $(id).alt = alt || `Theme of the year ${t.session}`;
     };
     pic("#themeWide", t.wideImage, t.wideAlt);
-    pic("#themeSquare", t.squareImage, t.squareAlt);
   }
 
   /* ---------- Schedule ------------------------------------------------------ */
@@ -1117,6 +1117,34 @@ function raf(fn) {
     /^https?:/.test(url) ? { href: url, target: "_blank", rel: "noopener" } : { href: url };
   const domain = (url) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 
+  function renderMotherChurch() {
+    const c = D.motherChurch;
+    if (!c) return;
+    const inner = [
+      h(
+        "div",
+        { class: "mother-main" },
+        h("span", { class: "family-badge", "aria-hidden": "true", text: c.short }),
+        h("p", { class: "label", text: "Our mother church" }),
+        h("h3", {}, c.name),
+        h("p", { text: c.text }),
+        c.url ? h("span", { class: "family-go", text: `Visit ${domain(c.url)} \u2197` }) : null
+      ),
+      c.details && c.details.length
+        ? h(
+            "dl",
+            { class: "mother-facts" },
+            c.details.map((d) => h("div", {}, h("dt", { text: d.label }), h("dd", { text: d.value })))
+          )
+        : null,
+    ];
+    $("#motherChurch").append(
+      c.url
+        ? h("a", { class: "card mother-card glow", ...linkAttrs(c.url) }, inner)
+        : h("div", { class: "card mother-card" }, inner)
+    );
+  }
+
   function renderAffiliations() {
     const list = $("#familyTree");
     D.affiliations.forEach((a, i) => {
@@ -1167,10 +1195,10 @@ function raf(fn) {
         h("h3", {}, c.name),
         h("p", { class: "campus-school", text: c.school }),
         h("p", { class: "campus-meta", text: `${c.place} \u00B7 ${c.sector} sector` }),
-        h("span", {
-          class: "campus-go",
-          text: c.here ? "You are here" : c.url ? `Visit ${domain(c.url)} \u2197` : "Website coming soon",
-        }),
+        // Campuses without a website get no line here.
+        c.here || c.url
+          ? h("span", { class: "campus-go", text: c.here ? "You are here" : `Visit ${domain(c.url)} \u2197` })
+          : null,
       ];
       const cls = "card campus glow" + (c.here ? " is-us" : "") + (c.url ? " has-link" : "");
       return c.url && !c.here
@@ -1412,6 +1440,18 @@ function raf(fn) {
     $$(
       ".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice, .family-card, .sector"
     ).forEach((el) => el.classList.add("glow"));
+    // The theme picture on the About page tilts towards the pointer.
+    withEl(".theme-collage", (box) => {
+      box.addEventListener("pointermove", (e) => {
+        const r = box.getBoundingClientRect();
+        box.style.setProperty("--tx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        box.style.setProperty("--ty", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      box.addEventListener("pointerleave", () => {
+        box.style.removeProperty("--tx");
+        box.style.removeProperty("--ty");
+      });
+    });
     let leaning = null;
     document.addEventListener(
       "pointermove",
@@ -1497,6 +1537,7 @@ function raf(fn) {
     [renderLeaders, "#leaderList"],
     [renderGallery, "#galleryGrid"],
     [renderContact, "#contactList"],
+    [renderMotherChurch, "#motherChurch"],
     [renderAffiliations, "#familyTree"],
     [renderCampuses, "#campusGrid"],
     [setupForms],

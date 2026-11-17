@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Affiliations | NUBS Legon, NUBS Ghana and the Ghana Baptist Convention</title>
-  <meta name="description" content="How NUBS Legon is connected: a local union of NUBS Ghana, an auxiliary of the Ghana Baptist Convention, with sister unions at KNUST, UCC, UEW, UDS and 50+ campuses.">
+  <meta name="description" content="How NUBS Legon is connected: our mother church Legon Baptist Church, NUBS Ghana, the Ghana Baptist Convention and sister unions at KNUST, UCC, UEW and UDS.">
   <link rel="canonical" href="https://nubslegon.com/affiliations">
   <meta property="og:url" content="https://nubslegon.com/affiliations">
   <meta property="og:title" content="Affiliations | NUBS Legon, NUBS Ghana and the Ghana Baptist Convention">
-  <meta property="og:description" content="NUBS Legon, NUBS Ghana, the Ghana Baptist Convention and NUBS local unions on campuses across Ghana.">
+  <meta property="og:description" content="Legon Baptist Church, NUBS Ghana, the Ghana Baptist Convention and NUBS local unions on campuses across Ghana.">
   <!-- SHARED HEAD: the same on every page. Edit it in index.html, then run  npm run sync -->
   <meta name="theme-color" content="#2860e0">
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48.png">
@@ -72,6 +72,17 @@
             "url": "https://ghanabaptistconvention.com/"
           }
         }
+      },
+      {
+        "@type": "Church",
+        "name": "Legon Baptist Church",
+        "url": "https://www.legonbaptistchurch.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Staff Village, behind Legon Police Station",
+          "addressLocality": "Legon, Accra",
+          "addressCountry": "GH"
+        }
       }
     ]
   }
@@ -108,11 +119,17 @@
         <button class="nav-drop" type="button" aria-expanded="false" aria-controls="aboutSub">About us<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="nav-sub" id="aboutSub">
           <a href="/about"><b>About us</b><span>Who we are, our mission and motto</span></a>
-          <a href="/affiliations"><b>Affiliations</b><span>Ghana Baptist Convention, NUBS Ghana and sister campuses</span></a>
+          <a href="/affiliations"><b>Affiliations</b><span>Our mother church, NUBS Ghana and sister campuses</span></a>
         </div>
       </div>
       <a href="/auxiliaries">Auxiliaries</a>
-      <a href="/sermons">Sermons</a>
+      <div class="nav-group">
+        <button class="nav-drop" type="button" aria-expanded="false" aria-controls="sermonSub">Sermons<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav-sub" id="sermonSub">
+          <a href="/sermons"><b>Sermons</b><span>Catch up on messages on Telegram</span></a>
+          <a href="/library"><b>Library</b><span>Christian books to read or download</span></a>
+        </div>
+      </div>
       <a href="/freshers">Freshers</a>
       <a href="/events">Events</a>
       <a href="/leadership">Leadership</a>
@@ -130,13 +147,27 @@
       <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/about">About us</a><span aria-hidden="true">/</span><span aria-current="page">Affiliations</span></nav>
       <p class="ev-pill">Affiliations</p>
       <h1 id="pageTitle">One family. <span>Many campuses.</span></h1>
-      <p class="ev-sub">NUBS Legon is a local union of NUBS Ghana and part of the Ghana Baptist Convention, with sister unions on campuses across the country.</p>
+      <p class="ev-sub">Legon Baptist Church is our mother church. We are a local union of NUBS Ghana, part of the Ghana Baptist Convention, with sister unions on campuses across the country.</p>
     </div>
     <svg class="ev-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,95 480,0 720,35 C960,70 1200,95 1440,30 L1440,90 L0,90 Z" fill="#fff"/></svg>
   </section>
 
+  <!-- MOTHER CHURCH -->
+  <section class="section section-tight" id="mother-church" aria-labelledby="motherTitle">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Our home church</p>
+          <h2 id="motherTitle">Our mother church.</h2>
+        </div>
+        <p class="head-note">The local church family that NUBS Legon belongs to. Tap the card to visit their website.</p>
+      </div>
+      <div id="motherChurch"></div>
+    </div>
+  </section>
+
   <!-- FAMILY: Convention > national union > us -->
-  <section class="section" id="family" aria-labelledby="familyTitle">
+  <section class="section band" id="family" aria-labelledby="familyTitle">
     <div class="wrap">
       <div class="head">
         <div>
@@ -150,7 +181,7 @@
   </section>
 
   <!-- CAMPUSES -->
-  <section class="section band" id="campuses" aria-labelledby="campusTitle">
+  <section class="section" id="campuses" aria-labelledby="campusTitle">
     <div class="wrap">
       <div class="head">
         <div>
