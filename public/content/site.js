@@ -38,6 +38,8 @@ NUBS_DATA.contact = {
   phoneWhatsApp: "233536841622",
   prayerWhatsApp: "233598352200",
   freshersWhatsAppGroup: "https://chat.whatsapp.com/LPpJbcf5yqY09IbQ7xRnj1?s=sw&p=i&mlu=4&ilr=4&iam=2",
+  // Every "Join the family" button opens this WhatsApp group straight away.
+  familyWhatsAppGroup: "https://chat.whatsapp.com/F2t719EUbQpEIRyADuiK6n?s=cl&p=a&iam=2",
   social: {
     instagram: "https://www.instagram.com/nubs_legon/",
     facebook: "",

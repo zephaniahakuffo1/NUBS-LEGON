@@ -36,7 +36,8 @@ every content, theme or id change, and also confirm the affected section still r
   affiliations > auxiliaries > sermons > library > freshers > events > leadership > gallery > contact > home. Each holds its own `<title>`, description,
   canonical, OG tags and JSON-LD (Organization/WebSite on home, BreadcrumbList elsewhere), a page banner
   (`.ev-hero.page-hero` with the page's only `h1`), its sections, and a "Next page" band before the footer.
-- The menu has two click-to-open drop-downs (`.nav-group`): About us > About us / Affiliations, and Sermons >
+- The menu starts with a Home link (house icon; icon-only between 981 and 1199px so the menu fits), then two
+  click-to-open drop-downs (`.nav-group`): About us > About us / Affiliations, and Sermons >
   Sermons / Library. Their button lights up when the current page is inside them.
 - Three blocks are identical on every page, between `<!-- SHARED HEAD: -->`, `<!-- SHARED TOP: -->` and
   `<!-- SHARED BOTTOM: -->` comments: icons/fonts/CSS, the menu, and footer + dialogs + scripts. Edit them only in
@@ -68,6 +69,12 @@ every content, theme or id change, and also confirm the affected section still r
   `innerHTML` with data values.
 - All times are Ghana time = UTC; date code uses UTC getters/`Date.UTC` deliberately. Dates in data are
   `"YYYY-MM-DD"`, times `"HH:MM"`. Past events hide themselves at render time.
+- "Join the family" buttons (`[data-family]`) open the WhatsApp group in `contact.familyWhatsAppGroup`
+  (`site.js`); there is no family sign-up form. The join dialog remains only for "Join this auxiliary".
+- Motion (`setupMotion` + the "Motion" CSS block): reveal, banner/hero entrances and grid pops replay every time
+  they scroll back into view; on the home page headings and lead text are split into `<nubs-w>` words that write
+  themselves in. All of it is off under `prefers-reduced-motion`. Full-page screenshots tools that resize the
+  viewport restart these animations, so capture viewport-sized shots when checking visuals.
 - Forms never POST anywhere: they validate (Ghana phone numbers normalised to digits) and open a prefilled
   WhatsApp link (`waLink`). Empty-string links in the data hide/disable the related button.
 - Gallery entries are `{ file, album, caption? }`; the full-size file and its `thumbs/` copy share one file name

@@ -225,6 +225,11 @@ function raf(fn) {
     withEl("#mottoText", (el) => (el.textContent = `“${D.site.motto}”`));
     withEl("#mottoRef", (el) => (el.textContent = D.site.mottoReference));
     withEl("#nationalLink", (el) => (el.href = D.site.nationalUrl));
+    // Every "Join the family" button opens the family WhatsApp group (contact.familyWhatsAppGroup in site.js).
+    $$("[data-family]").forEach((a) => {
+      if (D.contact.familyWhatsAppGroup) a.href = D.contact.familyWhatsAppGroup;
+      else a.hidden = true;
+    });
     $("#footMotto").textContent = `${D.site.motto} (${D.site.mottoReference})`;
     $("#copyright").textContent =
       `© ${D.site.year} ${D.site.fullName}. Part of NUBS Ghana and the Ghana Baptist Convention.`;
@@ -1383,21 +1388,20 @@ function raf(fn) {
       ".cross-link",
       ".sector-pick",
     ].join(",");
+    // Every time an element comes into view it slides in again, scrolling down or back up.
     const io = new IntersectionObserver(
       (entries) => {
         let i = 0;
         entries.forEach((e) => {
-          if (!e.isIntersecting) return;
           const el = e.target;
-          io.unobserve(el);
-          const d = Math.min(i++ * 70, 420); // cards that arrive together come in one after another
-          el.style.setProperty("--d", `${d}ms`);
-          el.classList.add("in");
-          // Afterwards the element goes back to its normal styles (so hover effects work as before).
-          setTimeout(() => {
-            el.classList.remove("reveal", "in");
-            el.style.removeProperty("--d");
-          }, 900 + d);
+          if (e.isIntersecting) {
+            // cards that arrive together come in one after another
+            el.style.setProperty("--d", `${Math.min(i++ * 70, 420)}ms`);
+            el.classList.add("in");
+          } else {
+            el.style.setProperty("--d", "0ms");
+            el.classList.remove("in");
+          }
         });
       },
       { rootMargin: "0px 0px -8% 0px" }
@@ -1410,6 +1414,41 @@ function raf(fn) {
         el.classList.add("reveal");
         io.observe(el);
       });
+
+    // Home page: the headings and welcome words write themselves in, word by word, like the
+    // message under the leadership cards. Each word becomes a <nubs-w> element.
+    if ($(".hero")) {
+      const writeIO = new IntersectionObserver((entries) =>
+        entries.forEach((e) => e.target.classList.toggle("writing", e.isIntersecting))
+      );
+      $$(".hero h1, .hero-lede, main h2, main .head-note, #weekVerse").forEach((el) => {
+        let i = 0;
+        const walk = (node) =>
+          [...node.childNodes].forEach((n) => {
+            if (n.nodeType === 1) return walk(n);
+            if (n.nodeType !== 3 || !n.nodeValue.trim()) return;
+            const frag = document.createDocumentFragment();
+            n.nodeValue.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) frag.append(part);
+              else frag.append(h("nubs-w", { style: `--i:${Math.min(i++, 40)}`, text: part }));
+            });
+            n.replaceWith(frag);
+          });
+        walk(el);
+        el.classList.add("write");
+        writeIO.observe(el);
+      });
+    }
+
+    // Banner words, the home photo and photo/sermon/book/campus grids replay their entrance
+    // animation each time they come back into view.
+    const replay = new IntersectionObserver((entries) =>
+      entries.forEach((e) => e.target.classList.toggle("replay-off", !e.isIntersecting))
+    );
+    $$(".hero-in, .page-hero .wrap, .gallery, .sermon-list, .book-grid, .campus-grid").forEach((el) =>
+      replay.observe(el)
+    );
 
     // Photos, sermons and books added by a filter or "show more" pop in one after another.
     const stagger = (nodes) =>

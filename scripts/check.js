@@ -215,6 +215,7 @@ if (needObject("content/site.js", "contact", D.contact)) {
   }
   needWhatsApp(w, "prayerWhatsApp", c.prayerWhatsApp);
   needLink(w, "freshersWhatsAppGroup", c.freshersWhatsAppGroup);
+  needLink(w, "familyWhatsAppGroup", c.familyWhatsAppGroup);
   if (needObject(w, "social", c.social)) {
     knownKeys(`${w} > social`, c.social, ["instagram", "facebook", "youtube", "tiktok", "whatsappChannel"]);
     for (const [k, v] of Object.entries(c.social)) needLink(`${w} > social`, k, v);

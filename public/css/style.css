@@ -4082,15 +4082,36 @@ a.mother-card:hover .family-go {
   .motion .reveal {
     opacity: 0;
     translate: 0 30px;
+    /* the card's own hover effects (lift, shadow, colour) keep working, without the delay */
     transition:
-      opacity 0.6s ease,
-      translate 0.75s cubic-bezier(0.2, 0.75, 0.2, 1);
-    transition-delay: var(--d, 0ms);
+      opacity 0.6s ease var(--d, 0ms),
+      translate 0.75s cubic-bezier(0.2, 0.75, 0.2, 1) var(--d, 0ms),
+      transform 0.25s,
+      box-shadow 0.25s,
+      background-color 0.2s,
+      border-color 0.2s;
   }
   .motion .reveal.in {
     opacity: 1;
     translate: 0 0;
   }
+  /* Home page: words write themselves in (each word is a <nubs-w>, made by main.js) */
+  .motion .write nubs-w {
+    display: inline-block;
+    opacity: 0;
+    translate: -14px 0;
+    filter: blur(4px);
+  }
+  .motion .write.writing nubs-w {
+    animation: write-in 0.8s cubic-bezier(0.22, 0.8, 0.3, 1) forwards;
+    animation-delay: calc(var(--i) * 70ms + 80ms);
+  }
+  /* Out of view: entrance animations reset, so they play again on the way back */
+  .motion .replay-off,
+  .motion .replay-off * {
+    animation: none !important;
+  }
+
   /* New photos, sermons and books pop in when a filter or "show more" adds them */
   .motion .gallery > .shot,
   .motion .sermon-list > .sermon,
@@ -4214,6 +4235,13 @@ a.mother-card:hover .family-go {
 @keyframes drift {
   to {
     transform: translate(45vmax, 20vmax);
+  }
+}
+@keyframes write-in {
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
   }
 }
 @keyframes pop {
@@ -4343,5 +4371,52 @@ html:not(.js) .nav-group:focus-within .nav-sub {
   }
   .nav .nav-sub a {
     padding: 10px 12px;
+  }
+}
+
+/* ---- Home link at the start of the menu -------------------------------- */
+.nav .nav-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Laptops and landscape tablets: a tighter menu so every item fits on one line,
+   with Home shown as just the house (its word stays for screen readers). */
+.brand {
+  flex-shrink: 0; /* the logo never gets squeezed by the menu */
+}
+/* 1200px and wider: a little less space around each item so the full menu fits beside the logo */
+@media (min-width: 1200px) {
+  .nav a:not(.btn),
+  .nav-drop {
+    padding-inline: 10px;
+  }
+}
+@media (min-width: 981px) and (max-width: 1199px) {
+  .brand img {
+    width: 52px;
+    height: auto;
+  }
+  .brand-name {
+    font-size: 20px;
+  }
+  .nav {
+    gap: 2px;
+  }
+  .nav a:not(.btn),
+  .nav-drop {
+    padding-inline: 7px;
+    font-size: 12.5px;
+  }
+  .nav a.nav-home:not(.btn) {
+    font-size: 0;
+    gap: 0;
+  }
+  .nav .nav-home svg {
+    width: 18px;
+    height: 18px;
+  }
+  .nav .btn {
+    padding-inline: 14px;
   }
 }
