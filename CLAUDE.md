@@ -73,7 +73,7 @@ every content, theme or id change, and also confirm the affected section still r
 - Keep `public/` free of large non-site files: the Cloudflare build fails on assets over its size limit (a stray
   `.git` pack once did this, which is why the site moved to `public/`). The check fails on non-site files in `public/`.
 - SEO in `index.html`: canonical, Open Graph + Twitter card, `WebSite` + `Organization` JSON-LD (parent org
-  NUBS Ghana, `sameAs` Instagram/TikTok). Link preview image is `assets/images/og-image-v2.jpg` (1200x630); a new
+  NUBS Ghana, `sameAs` Instagram/TikTok/WhatsApp channel). Link preview image is `assets/images/og-image-v2.jpg` (1200x630); a new
   preview image needs a new filename and both `og:image` and `twitter:image` updated. Favicons must be square,
   multiples of 48 px.
 - If link previews stop working, Cloudflare's Bot Fight Mode / "Block AI bots" may be blocking crawlers.
@@ -84,7 +84,7 @@ every content, theme or id change, and also confirm the affected section still r
 
 ## Project context
 
-- Still-empty social fields in `content/site.js`: `facebook`, `youtube`, `whatsappChannel` (waiting for the
+- Still-empty social fields in `content/site.js`: `facebook`, `youtube` (waiting for the
   union to create those accounts).
 - Five alternative colour palettes are under consideration; adopting one means changing the variables in
   `css/theme.css`. The current Royal and Gold palette stays unless the user says otherwise.
