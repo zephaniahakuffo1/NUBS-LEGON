@@ -13,7 +13,7 @@ Everything you will normally change lives in three places:
 1. **Edit** the file. Save.
 2. **Check**: run `npm run check`. It reads everything and tells you in plain words if something is wrong
    (a missing comma, a wrong date, a picture that does not exist) and where.
-3. **Look**: run `npm start` and open http://localhost:3000 to see the page.
+3. **Look**: run `npm start` and open http://localhost:3000 to see the site (http://localhost:3000/events for the events page, and so on).
 4. **Publish**: `git add .` then `git commit -m "what you changed"` then `git push`.
 
 Cloudflare runs the same check before it publishes. If the check fails, the old working site stays online and
@@ -32,19 +32,24 @@ instructions at the top.
 
 ## Which file holds what
 
-| File in `public/content/` | What is in it |
-| --- | --- |
-| `site.js` | Name, motto, pillars, contact details, social links, and the **theme of the year** (verse, session, theme pictures) |
-| `schedule.js` | Weekly meetings and the countdown |
-| `auxiliaries.js` | The auxiliaries (ministries) |
-| `quiz.js` | The "Find your auxiliary" quiz |
-| `books.js` | Library books |
-| `sermons.js` | Sermons and the Telegram channel link |
-| `freshers.js` | Freshers intro, committee contacts, steps, quick answers |
-| `events.js` | Upcoming events |
-| `notices.js` | Announcements |
-| `leaders.js` | Leadership names and photos |
-| `gallery.js` | Gallery photos |
+| File in `public/content/` | What is in it | Shown on |
+| --- | --- | --- |
+| `site.js` | Name, motto, pillars, contact details, social links, and the **theme of the year** (verse, session, theme pictures) | every page (footer), home, about, contact |
+| `schedule.js` | Weekly meetings and the countdown | home |
+| `auxiliaries.js` | The auxiliaries (ministries) | /auxiliaries |
+| `quiz.js` | The "Find your auxiliary" quiz | /auxiliaries |
+| `books.js` | Library books | /library |
+| `sermons.js` | Sermons and the Telegram channel link | /sermons |
+| `freshers.js` | Freshers intro, committee contacts, steps, quick answers | /freshers |
+| `events.js` | Upcoming events | /events |
+| `notices.js` | Announcements | /events |
+| `leaders.js` | Leadership names and photos | /leadership |
+| `gallery.js` | Gallery photos | /gallery |
+| `affiliations.js` | Ghana Baptist Convention, NUBS Ghana, and NUBS unions on other campuses | /affiliations |
+
+The fixed words on a page (headings, the welcome text) are in that page's file in `public/`, for example
+`public/about.html`. The menu and footer are the same on every page: change them only in `public/index.html`,
+then run `npm run sync` to copy them to the other pages.
 
 ## Common jobs
 

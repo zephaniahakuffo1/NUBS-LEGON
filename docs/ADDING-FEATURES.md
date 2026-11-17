@@ -6,7 +6,8 @@ they use `docs/CONTENT.md`.
 ## How the site is put together
 
 ```
-public/index.html      the skeleton: section order, fixed words, empty containers with ids
+public/*.html          the pages: index.html (home), about.html, events.html, ... Each holds its own title,
+                       description, banner, fixed words and empty containers with ids
 public/content/*.js    the content: each file fills one part of NUBS_DATA
 public/js/main.js      the builder: one render function per section turns content into HTML
 public/css/theme.css   colours, fonts, corner roundness (CSS variables)
@@ -15,6 +16,14 @@ scripts/check.js       the safety check, run by hand, by GitHub and by Cloudflar
 ```
 
 No framework, no bundler, no build step. What is in `public/` is exactly what gets published.
+`about.html` is served at `/about`, `events.html` at `/events`, and so on.
+
+### The shared parts of every page
+
+The icons/fonts/styles at the top of `<head>`, the menu, and the footer with the pop-ups and scripts are the
+same on every page. They sit between `<!-- SHARED HEAD: -->`, `<!-- SHARED TOP: -->` and `<!-- SHARED BOTTOM: -->`
+comments. **Change them only in `index.html`**, then run `npm run sync` to copy them into the other pages.
+`npm run check` fails if a page's copy is different.
 
 ## The recipe for a new section
 
@@ -28,11 +37,12 @@ Example: a "Testimonies" section.
    ];
    ```
 2. **Load it.** In `index.html`, add `<script src="content/testimonies.js"></script>` with the other content
-   files, above `main.js`.
-3. **Container.** Add the `<section>` to `index.html` where it belongs, with an empty container that has an id
-   (`<div id="testimonyList"></div>`), plus a nav link if it needs one.
-4. **Renderer.** In `main.js`, write `renderTestimonies()` and add it to the list at the bottom of the file
-   (anywhere before `highlightKeywords`, which must stay last). Add the name to the `LISTS` line near the top so
+   files (inside SHARED BOTTOM, above `main.js`), then run `npm run sync`.
+3. **Container.** Add the `<section>` to the page where it belongs (for example `about.html`), with an empty
+   container that has an id (`<div id="testimonyList"></div>`).
+4. **Renderer.** In `main.js`, write `renderTestimonies()` and add `[renderTestimonies, "#testimonyList"]` to the
+   list at the bottom of the file (anywhere before `highlightKeywords`, which must stay last). The id makes it
+   run only on the page that has the container. Add the name to the `LISTS` line near the top so
    an unreadable file becomes an empty list instead of an error, and add it to the file map comment.
 5. **Style.** Add the CSS to the end of `style.css` under its own heading comment. Use `var(--blue)`,
    `var(--gold)` and the other theme variables, never a raw colour code, so theme changes reach it.
@@ -50,8 +60,22 @@ Example: a "Testimonies" section.
 - Forms never send data to a server. They validate and open a prefilled WhatsApp link (`waLink`).
 - An empty link `""` in the content must hide or disable its button, not break it.
 - Files under `/assets/` are cached for a year. A changed picture needs a new file name.
-- Do not rename or remove an `id` in `index.html` without changing `main.js` too. The check catches this.
+- Do not rename or remove an `id` on a page without changing `main.js` too. The check catches this.
+- Never set `document.title` from JavaScript. Each page's `<title>` is written for search engines.
 - Keep `public/` free of anything that is not part of the site. Everything in it is published.
+
+## Adding a whole new page
+
+Example: a `/testimonies` page.
+
+1. Copy a short page, such as `events.html`, to `testimonies.html`.
+2. Change its `<title>`, `<meta name="description">`, canonical link, `og:url`, `og:title`, `og:description` and
+   the BreadcrumbList block. The title and description must be different from every other page.
+3. Change the banner (breadcrumb, pill, `h1`, line under it) and replace the sections.
+4. Fix the "Next page" chain: the page before it should point to it, and it should point to the next one.
+5. Add a link to the menu and/or footer in `index.html`, then `npm run sync`.
+6. Add `<url><loc>https://nubslegon.com/testimonies</loc></url>` to `sitemap.xml`.
+7. `npm run check` (it catches a missing sitemap line, a repeated title or a link to a page that does not exist).
 
 ## Working on something big
 

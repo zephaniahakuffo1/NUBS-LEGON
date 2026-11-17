@@ -17,7 +17,8 @@
      "Empowered"  "Schedule"  "Ministries" (auxiliaries)  "Tools"  "Sermons"
      "Freshers"  "Events"  "Leadership"  "Gallery"  "Contact"  "Footer"
      "Floating button, dialogs"  "Responsive"  "library"  "scroll buttons"
-     "readability on blue"  "phones"
+     "readability on blue"  "phones"  "Pages" (page banner, explore cards, next page)
+     "Affiliations"  "Motion" (page transitions, reveal, glow)
 
    BREAKPOINTS: 1100px (tablet landscape), 980px (tablet, mobile menu),
                 900px, 720px and 640px (phones), 600px.
@@ -1371,9 +1372,23 @@ textarea:focus {
 .foot-credit {
   opacity: 0.75;
 }
-.foot-credit span {
+.footer .foot-credit a {
   color: #fff;
+  font-size: inherit;
   font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.foot-credit:has(a:hover, a:focus-visible) {
+  opacity: 1;
+}
+.footer .foot-credit a:hover,
+.footer .foot-credit a:focus-visible {
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 /* ---- Floating button, dialogs ---------------------------------------- */
@@ -2886,20 +2901,8 @@ dialog {
   transform: rotate(-2.5deg);
   transition: transform 0.4s;
 }
-.tc-square {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 52%;
-  transform: rotate(3deg);
-  border: 6px solid #fff;
-  transition: transform 0.4s;
-}
 .theme-collage:hover .tc-wide {
   transform: rotate(-1deg) translateY(-4px);
-}
-.theme-collage:hover .tc-square {
-  transform: rotate(1deg) translateY(-6px);
 }
 .tc-tag {
   position: absolute;
@@ -2925,11 +2928,6 @@ dialog {
 }
 .tc-wide {
   width: 100%;
-}
-.tc-square {
-  width: 40%;
-  right: -14px;
-  bottom: 6px;
 }
 
 /* ---- Weekly rhythm: livelier cards ------------------------------------- */
@@ -3376,11 +3374,6 @@ dialog {
 .footer .brand-sub {
   color: #dbe7ff;
 }
-@media (max-width: 900px) {
-  .tc-square {
-    right: 0;
-  }
-}
 
 /* ---- Phones: tidier floating buttons, readable headings, two-column leaders ---- */
 .dark h2 em,
@@ -3463,5 +3456,981 @@ dialog {
   }
   .leader-body .lname::after {
     margin-top: 8px;
+  }
+}
+
+/* ---- Pages: banner, explore cards, next page, current menu item -------- */
+/* Every page except home starts with a banner (the events banner, made shorter). */
+.page-hero {
+  padding: clamp(40px, 6vw, 72px) 0 clamp(78px, 9vw, 118px);
+}
+.page-hero.flush {
+  padding-bottom: clamp(36px, 5vw, 56px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+.page-hero h1 {
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #fff;
+  max-width: 18ch;
+  margin: 18px auto 14px;
+}
+.page-hero h1 span {
+  color: var(--gold);
+}
+.page-hero .ev-sub:empty {
+  display: none;
+}
+.crumbs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+.crumbs a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+.crumbs a:hover {
+  border-color: #fff;
+}
+
+/* Home: one card per page */
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 9 pages = 3 rows of 3 */
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .explore-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .explore-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.explore-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 52px 22px 22px;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.explore-card b {
+  font-family: var(--head);
+  font-size: 1.1rem;
+  color: var(--navy);
+}
+.explore-card span {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.explore-card i {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  translate: 0 -50%;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--blue);
+  transition: right 0.2s;
+}
+.explore-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 44px rgba(var(--blue-rgb), 0.16);
+}
+.explore-card:hover i {
+  right: 14px;
+}
+
+/* The end of every page: where to go next */
+.next-page {
+  background: var(--mist);
+  border-top: 1px solid var(--line);
+  padding-block: clamp(36px, 5vw, 56px);
+}
+.next-in {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 32px;
+}
+.next-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 320px;
+  max-width: 560px;
+  padding: 22px 26px;
+  border-radius: var(--radius);
+  background: var(--blue);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 18px 44px rgba(var(--blue-rgb), 0.22);
+  transition: transform 0.2s;
+}
+.next-link small {
+  font: 700 11px var(--head);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.next-link b {
+  font-family: var(--head);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+}
+.next-link span {
+  font-size: 14px;
+  color: #fff;
+}
+.next-link:hover {
+  transform: translateY(-3px);
+}
+.next-in .link-arrow {
+  margin-top: 0;
+}
+.cross-link {
+  margin-top: 28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.cross-link .link-arrow {
+  margin: 0 0 0 6px;
+}
+
+/* The page you are on, in the menu and the footer */
+.nav a[aria-current="page"]:not(.btn) {
+  background: var(--mist);
+  color: var(--blue);
+}
+.footer nav a[aria-current="page"] {
+  color: var(--gold);
+}
+@media (max-width: 980px) {
+  .nav a[aria-current="page"]:not(.btn) {
+    background: none;
+    color: var(--blue);
+  }
+}
+/* White cards inside blue sections keep dark text (the prayer form's privacy note was white on white) */
+.dark .card .muted {
+  color: var(--muted);
+}
+
+/* ---- Affiliations: the family chain, sector buttons, campus tiles ---- */
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 26px;
+}
+.family {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 880px;
+}
+/* A line joins each body to the one below it */
+.family-step + .family-step {
+  position: relative;
+  padding-top: 54px;
+}
+.family-step + .family-step::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  height: 42px;
+  border-left: 3px dotted var(--blue);
+  translate: -1.5px 0;
+}
+.family-step + .family-step::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  width: 12px;
+  height: 12px;
+  border-right: 3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  translate: -6px 0;
+  rotate: 45deg;
+}
+.family-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(16px, 3vw, 28px);
+  align-items: start;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+a.family-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(var(--blue-rgb), 0.18);
+}
+.family-badge {
+  display: grid;
+  place-items: center;
+  width: clamp(60px, 9vw, 80px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font: 800 clamp(13px, 1.8vw, 17px) var(--head);
+  letter-spacing: 0.02em;
+  box-shadow: 0 10px 24px rgba(var(--blue-rgb), 0.3);
+}
+.family-body h3 {
+  margin: 4px 0 10px;
+}
+.family-body > p:not(.label) {
+  color: var(--muted);
+  margin: 0;
+}
+.family-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+.family-facts li {
+  background: var(--mist);
+  color: var(--blue);
+  font: 600 12px var(--head);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.family-go {
+  display: inline-block;
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--blue);
+  transition: translate 0.25s;
+}
+a.family-card:hover .family-go {
+  translate: 6px 0;
+}
+.family-step.is-us .family-card {
+  background: var(--blue);
+  color: #fff;
+}
+.family-step.is-us .family-badge {
+  background: var(--gold);
+  color: var(--navy);
+}
+.family-step.is-us .family-body > p:not(.label),
+.family-step.is-us .family-go {
+  color: #fff;
+}
+.family-step.is-us .label {
+  color: var(--gold-light);
+}
+.family-step.is-us .family-facts li {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.family-step.is-us h3 {
+  color: #fff;
+}
+
+.sector-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: 12px;
+  margin-bottom: 26px;
+}
+@media (max-width: 560px) {
+  .sector-pick {
+    grid-template-columns: 1fr 1fr;
+  }
+  .sector-pick > :first-child {
+    grid-column: 1 / -1;
+  }
+  .family-card {
+    grid-template-columns: 1fr;
+  }
+}
+.sector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: calc(var(--radius) * 0.75);
+  background: #fff;
+  color: var(--ink);
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.2s;
+}
+.sector:hover {
+  border-color: var(--blue);
+  transform: translateY(-2px);
+}
+.sector b {
+  font-family: var(--head);
+  color: var(--navy);
+}
+.sector span {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.sector em {
+  align-self: flex-start;
+  margin-top: 6px;
+  font: 700 11px var(--head);
+  font-style: normal;
+  color: var(--blue);
+  background: var(--mist);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.sector[aria-pressed="true"] {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.sector[aria-pressed="true"] b,
+.sector[aria-pressed="true"] span {
+  color: #fff;
+}
+.sector[aria-pressed="true"] em {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.campus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 16px;
+}
+.campus {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 230px;
+  text-decoration: none;
+  color: var(--ink);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+.campus-short {
+  font: 800 clamp(1.9rem, 3.2vw, 2.4rem) var(--head);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+.campus h3 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+.campus-school {
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0;
+}
+.campus-meta {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 2px 0 0;
+}
+.campus-go {
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+}
+.campus.has-link .campus-go,
+a.campus-go {
+  color: var(--blue);
+  font-weight: 700;
+}
+a.campus:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(var(--blue-rgb), 0.18);
+}
+.campus.is-us {
+  background: var(--blue);
+  color: #fff;
+}
+.campus.is-us .campus-short,
+.campus.is-us .campus-go {
+  color: var(--gold);
+}
+.campus.is-us h3 {
+  color: #fff;
+}
+.campus.is-us .campus-school,
+.campus.is-us .campus-meta {
+  color: #fff;
+}
+.campus-more {
+  background: transparent;
+  border: 2px dashed rgba(var(--blue-rgb), 0.3);
+  box-shadow: none;
+}
+.campus-more .campus-short {
+  color: var(--gold-dark);
+}
+
+/* ---- Mother church card (Affiliations page) ---------------------------- */
+.mother-card {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: clamp(20px, 4vw, 44px);
+  align-items: center;
+  text-decoration: none;
+  color: var(--ink);
+  border-top: 5px solid var(--gold);
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+a.mother-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 60px rgba(var(--blue-rgb), 0.18);
+}
+.mother-main .family-badge {
+  background: var(--gold);
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+.mother-main h3 {
+  font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+  margin: 4px 0 10px;
+}
+.mother-main > p:not(.label) {
+  color: var(--muted);
+  margin: 0;
+}
+a.mother-card:hover .family-go {
+  translate: 6px 0;
+}
+.mother-facts {
+  margin: 0;
+  display: grid;
+  gap: 4px;
+  background: var(--mist);
+  border-radius: calc(var(--radius) * 0.8);
+  padding: 8px 20px;
+}
+.mother-facts div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.mother-facts div:last-child {
+  border-bottom: 0;
+}
+.mother-facts dt {
+  font: 700 11px var(--head);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.mother-facts dd {
+  margin: 2px 0 0;
+  color: var(--navy);
+  font-weight: 600;
+}
+@media (max-width: 760px) {
+  .mother-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Theme picture (About page): one picture that comes alive on hover --
+   It straightens, lifts and tilts towards the pointer, the picture zooms in
+   and a band of light sweeps across it. */
+.theme-collage {
+  padding-bottom: 30px;
+  perspective: 1000px;
+}
+.tc-wide {
+  position: relative;
+  transform: rotate(-2deg);
+  transition:
+    transform 0.6s cubic-bezier(0.2, 0.75, 0.2, 1),
+    box-shadow 0.6s;
+}
+.tc-wide img {
+  transition:
+    scale 0.9s cubic-bezier(0.2, 0.75, 0.2, 1),
+    filter 0.6s;
+}
+.tc-wide::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 48%, transparent 66%);
+  translate: -120% 0;
+  pointer-events: none;
+}
+.theme-collage:hover .tc-wide {
+  transform: translateY(-10px) rotateX(calc(var(--ty, 0) * -8deg)) rotateY(calc(var(--tx, 0) * 10deg));
+  box-shadow: 0 36px 70px rgba(var(--navy-rgb), 0.32);
+}
+.theme-collage:hover .tc-wide img {
+  scale: 1.07;
+  filter: saturate(1.15);
+}
+.theme-collage:hover .tc-wide::after {
+  translate: 120% 0;
+  transition: translate 1.1s ease;
+}
+.tc-tag {
+  left: 18px;
+  bottom: 0;
+  transition: translate 0.4s;
+}
+.theme-collage:hover .tc-tag {
+  translate: 0 -8px;
+}
+
+/* ---- Motion: page transitions, entrances, scroll reveal, hover life ---- */
+/* Everything here switches off for visitors whose phone asks for less motion.
+   The scroll reveal only happens when main.js adds the "motion" class, so
+   nothing is ever hidden if the script does not run. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Moving between pages: the old page lifts away, the new one rises in.
+     The menu bar and the help button stay still. (Chrome, Edge, Safari; other browsers just change page.) */
+  @view-transition {
+    navigation: auto;
+  }
+  .header {
+    view-transition-name: site-header;
+  }
+  .float-help {
+    view-transition-name: help-button;
+  }
+  ::view-transition-old(root) {
+    animation: page-out 0.26s ease-in both;
+  }
+  ::view-transition-new(root) {
+    animation: page-in 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+  }
+
+  /* Page banner and home hero: the words rise in one after another */
+  .page-hero .wrap > *,
+  .hero-in > :not(.hero-frame) {
+    animation: rise 0.7s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+  }
+  .page-hero .wrap > :nth-child(2),
+  .hero-in > :nth-child(2) {
+    --i: 1;
+  }
+  .page-hero .wrap > :nth-child(3),
+  .hero-in > :nth-child(3) {
+    --i: 2;
+  }
+  .page-hero .wrap > :nth-child(4),
+  .hero-in > :nth-child(4) {
+    --i: 3;
+  }
+  .hero-in > :nth-child(5) {
+    --i: 4;
+  }
+  .hero-frame {
+    animation:
+      frame-in 0.9s 0.15s cubic-bezier(0.2, 0.75, 0.2, 1) both,
+      float 7s 1.1s ease-in-out infinite;
+  }
+  /* The gold word in each banner gets an underline that draws itself */
+  .page-hero h1 span {
+    background: linear-gradient(var(--gold), var(--gold)) no-repeat 0 100% / 0 0.08em;
+    padding-bottom: 0.04em;
+    animation: underline 0.8s 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+  /* Soft moving glow behind the banner dots */
+  .page-hero {
+    overflow: hidden;
+  }
+  .page-hero::before {
+    content: "";
+    position: absolute;
+    width: 60vmax;
+    height: 60vmax;
+    left: -15vmax;
+    top: -30vmax;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.16), transparent);
+    animation: drift 16s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+  .page-hero .wrap {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Scroll reveal: cards and headings slide up as they come into view */
+  .motion .reveal {
+    opacity: 0;
+    translate: 0 30px;
+    /* the card's own hover effects (lift, shadow, colour) keep working, without the delay */
+    transition:
+      opacity 0.6s ease var(--d, 0ms),
+      translate 0.75s cubic-bezier(0.2, 0.75, 0.2, 1) var(--d, 0ms),
+      transform 0.25s,
+      box-shadow 0.25s,
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+  .motion .reveal.in {
+    opacity: 1;
+    translate: 0 0;
+  }
+  /* Home page: words write themselves in (each word is a <nubs-w>, made by main.js) */
+  .motion .write nubs-w {
+    display: inline-block;
+    opacity: 0;
+    translate: -14px 0;
+    filter: blur(4px);
+  }
+  .motion .write.writing nubs-w {
+    animation: write-in 0.8s cubic-bezier(0.22, 0.8, 0.3, 1) forwards;
+    animation-delay: calc(var(--i) * 70ms + 80ms);
+  }
+  /* Out of view: entrance animations reset, so they play again on the way back */
+  .motion .replay-off,
+  .motion .replay-off * {
+    animation: none !important;
+  }
+
+  /* New photos, sermons and books pop in when a filter or "show more" adds them */
+  .motion .gallery > .shot,
+  .motion .sermon-list > .sermon,
+  .motion .book-grid > .book,
+  .motion .campus-grid > .campus {
+    animation: pop 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+    animation-delay: calc(var(--n, 0) * 45ms);
+  }
+
+  /* Buttons lean towards the pointer and press in when tapped */
+  .btn {
+    transition:
+      translate 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
+      scale 0.15s ease,
+      background-color 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+  }
+  .btn:active {
+    scale: 0.96;
+  }
+
+  /* A light that follows the pointer across cards */
+  .glow {
+    position: relative;
+    isolation: isolate;
+  }
+  .glow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(var(--blue-rgb), 0.13),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .glow:hover::after {
+    opacity: 1;
+  }
+  .next-link.glow::after {
+    background: radial-gradient(
+      300px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.22),
+      transparent 70%
+    );
+    z-index: 0;
+  }
+  .next-link > * {
+    position: relative;
+    z-index: 1;
+  }
+  .explore-card i,
+  .next-link span {
+    transition: translate 0.25s;
+  }
+  .next-link:hover span {
+    translate: 6px 0;
+  }
+
+  /* Reading progress line under the menu, and the menu bar gains a shadow once you scroll */
+  .scroll-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 60;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--blue-light));
+    transform-origin: 0 50%;
+    scale: var(--p, 0) 1;
+    pointer-events: none;
+  }
+  .header {
+    transition: box-shadow 0.3s;
+  }
+  .header.scrolled {
+    box-shadow: 0 10px 30px rgba(var(--navy-rgb), 0.08);
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    translate: 0 -16px;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 32px;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+@keyframes frame-in {
+  from {
+    scale: 0.94;
+    rotate: 2deg;
+  }
+}
+@keyframes float {
+  50% {
+    translate: 0 -8px;
+  }
+}
+@keyframes underline {
+  to {
+    background-size: 100% 0.08em;
+  }
+}
+@keyframes drift {
+  to {
+    transform: translate(45vmax, 20vmax);
+  }
+}
+@keyframes write-in {
+  to {
+    opacity: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+    scale: 0.97;
+  }
+}
+
+/* ---- Menu drop-down: About us > About us / Affiliations ---------------- */
+.nav-group {
+  position: relative;
+}
+.nav-drop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 13.5px var(--head);
+  color: var(--navy);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.nav-drop:hover,
+.nav-group.open .nav-drop,
+.nav-group.is-current .nav-drop {
+  background: var(--mist);
+  color: var(--blue);
+}
+.nav-drop svg {
+  transition: rotate 0.25s;
+}
+.nav-group.open .nav-drop svg {
+  rotate: 180deg;
+}
+.nav-sub {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  translate: -50% 0;
+  width: 300px;
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(var(--navy-rgb), 0.16);
+  z-index: 70;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px) scale(0.97);
+  transform-origin: 50% 0;
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
+    visibility 0s 0.25s;
+}
+/* (Without JavaScript the list still opens when the button is focused.) */
+.nav-group.open .nav-sub,
+html:not(.js) .nav-group:focus-within .nav-sub {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.2s,
+    transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+.nav .nav-sub a {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  white-space: normal;
+  text-decoration: none;
+  color: var(--navy);
+}
+.nav .nav-sub a b {
+  font: 700 14px var(--head);
+}
+.nav .nav-sub a span {
+  font: 400 12.5px var(--font);
+  line-height: 1.4;
+  color: var(--muted);
+}
+.nav .nav-sub a:hover,
+.nav .nav-sub a[aria-current="page"] {
+  background: var(--mist);
+  color: var(--blue);
+}
+@media (max-width: 980px) {
+  /* In the phone menu the list opens in place, under "About us" */
+  .nav-drop {
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13.5px;
+  }
+  .nav-drop:hover,
+  .nav-group.open .nav-drop,
+  .nav-group.is-current .nav-drop {
+    background: none;
+  }
+  .nav-sub {
+    position: static;
+    translate: none;
+    width: auto;
+    display: none;
+    padding: 4px 0 8px 14px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .nav-group.open .nav-sub,
+  html:not(.js) .nav-group:focus-within .nav-sub {
+    display: grid;
+    animation: rise 0.3s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+  }
+  .nav .nav-sub a {
+    padding: 10px 12px;
+  }
+}
+
+/* ---- Home link at the start of the menu -------------------------------- */
+.nav .nav-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Laptops and landscape tablets: a tighter menu so every item fits on one line,
+   with Home shown as just the house (its word stays for screen readers). */
+.brand {
+  flex-shrink: 0; /* the logo never gets squeezed by the menu */
+}
+/* 1200px and wider: a little less space around each item so the full menu fits beside the logo */
+@media (min-width: 1200px) {
+  .nav a:not(.btn),
+  .nav-drop {
+    padding-inline: 10px;
+  }
+}
+@media (min-width: 981px) and (max-width: 1199px) {
+  .brand img {
+    width: 52px;
+    height: auto;
+  }
+  .brand-name {
+    font-size: 20px;
+  }
+  .nav {
+    gap: 2px;
+  }
+  .nav a:not(.btn),
+  .nav-drop {
+    padding-inline: 7px;
+    font-size: 12.5px;
+  }
+  .nav a.nav-home:not(.btn) {
+    font-size: 0;
+    gap: 0;
+  }
+  .nav .nav-home svg {
+    width: 18px;
+    height: 18px;
+  }
+  .nav .btn {
+    padding-inline: 14px;
   }
 }

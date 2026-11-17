@@ -15,9 +15,10 @@ function raf(fn) {
    NUBS LEGON — PAGE SCRIPT
    --------------------------------------------------------------------------
    Reads everything from NUBS_DATA (the files in content/) and builds the page.
-   Every section follows the same pattern:
+   The same script runs on every page (index.html, about.html, ...). Every
+   section follows the same pattern:
 
-       1. find the empty container in index.html
+       1. find the empty container on the page (skipped if this page has none)
        2. loop over the matching list in the content file
        3. create one card per item and put it in the container
 
@@ -26,7 +27,8 @@ function raf(fn) {
 
    FILE MAP (search for the function name)
      helpers            $, $$, h() safe element builder, date and phone helpers
-     renderChrome       header text, hero, pillars, footer
+     setupPages         marks the current page in the menu; old #links go to the new pages
+     renderChrome       pillars, motto, footer
      renderWeek         countdown to the next meeting + word and theme of the year
      renderSchedule     weekly rhythm cards
      renderAuxiliaries  auxiliary cards; renderQuiz = "find your auxiliary"
@@ -38,8 +40,11 @@ function raf(fn) {
      renderLeaders      leadership cards + animated paragraph
      renderGallery      photo grid, filters, lightbox
      renderContact      contact details and social links
-     setupDialogs       join, help desk and photo pop-ups
+     renderMotherChurch Legon Baptist Church card
+     renderAffiliations Convention > NUBS Ghana > NUBS Legon chain; renderCampuses = sister unions + sector filter
+     setupDialogs       join, help desk and photo pop-ups; setupHelpdesk = its WhatsApp button
      setupForms         join and prayer forms (open WhatsApp, validate numbers)
+     setupMotion        scroll reveal, glow and lean on hover, reading progress line
      highlightKeywords  yellow highlight for "NUBS" and "Christ"
      (bottom)           scroll up / scroll down buttons
 
@@ -49,7 +54,30 @@ function raf(fn) {
 (function () {
   "use strict";
 
-  // index.html creates an empty NUBS_DATA, then each file in content/ fills in its own part.
+  // The site used to be one long page, so old links and posters say nubslegon.com/#freshers.
+  // Those now open the matching page. The ?s= tag in the link is kept for the visitor counts.
+  const MOVED = {
+    about: "/about",
+    identity: "/about#identity",
+    auxiliaries: "/auxiliaries",
+    quiz: "/auxiliaries#quiz",
+    sermons: "/sermons",
+    library: "/library",
+    freshers: "/freshers",
+    events: "/events",
+    notices: "/events#notices",
+    leadership: "/leadership",
+    gallery: "/gallery",
+    contact: "/contact",
+  };
+  const oldId = location.hash.slice(1);
+  if (MOVED[oldId] && !document.getElementById(oldId)) {
+    const [page, anchor] = MOVED[oldId].split("#");
+    location.replace(page + location.search + (anchor ? "#" + anchor : ""));
+    return;
+  }
+
+  // Every page creates an empty NUBS_DATA, then each file in content/ fills in its own part.
   const D = window.NUBS_DATA;
   if (!D) {
     console.error("NUBS_DATA is missing. Check the script order at the bottom of index.html.");
@@ -57,7 +85,10 @@ function raf(fn) {
   }
   // A content file with a typing mistake does not load at all. Its list is treated as empty here,
   // so only that part of the page is affected and everything else still works.
-  const LISTS = "serviceSchedule auxiliaries quiz books sermons events notices leaders gallery".split(" ");
+  const LISTS =
+    "serviceSchedule auxiliaries quiz books sermons events notices leaders gallery affiliations campusUnions nubsSectors".split(
+      " "
+    );
   LISTS.forEach((key) => {
     if (Array.isArray(D[key])) return;
     console.error(`Content "${key}" did not load. Run "npm run check" to find the mistake.`);
@@ -137,23 +168,71 @@ function raf(fn) {
         btn.setAttribute("aria-expanded", "false");
       }
     });
+
+    // Drop-down menus (About us > About us / Affiliations): a click opens or closes one;
+    // a click anywhere else or the Escape key closes it.
+    document.documentElement.classList.add("js");
+    const groups = $$(".nav-group", nav);
+    const setOpen = (g, open) => {
+      g.classList.toggle("open", open);
+      $(".nav-drop", g).setAttribute("aria-expanded", String(open));
+    };
+    groups.forEach((g) =>
+      $(".nav-drop", g).addEventListener("click", () => {
+        const open = !g.classList.contains("open");
+        groups.forEach((o) => setOpen(o, false));
+        setOpen(g, open);
+      })
+    );
+    document.addEventListener("click", (e) => {
+      groups.forEach((g) => {
+        if (!g.contains(e.target) || e.target.closest(".nav-sub a")) setOpen(g, false);
+      });
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      groups.forEach((g) => {
+        if (!g.classList.contains("open")) return;
+        setOpen(g, false);
+        $(".nav-drop", g).focus();
+      });
+    });
+  }
+
+  // Runs fn(element) only when this page has that element.
+  function withEl(sel, fn) {
+    const el = $(sel);
+    if (el) fn(el);
+  }
+
+  // Lights up the current page in the menu and the footer. When the page is inside a drop-down
+  // (About us, Affiliations), the drop-down's own button lights up too.
+  function setupPages() {
+    const here = location.pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+    $$("#nav a, .footer nav a").forEach((a) => {
+      if (a.getAttribute("href") === here) a.setAttribute("aria-current", "page");
+    });
+    $$(".nav-group").forEach((g) => g.classList.toggle("is-current", !!$("a[aria-current]", g)));
   }
 
   function renderChrome() {
-    document.title = `${D.site.name} | ${D.site.theme}`;
+    // The page title is written in each page's <head> for search engines; it is not changed here.
     // The phone browser's address bar follows the blue in css/theme.css.
     const blue = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim();
     if (blue) $('meta[name="theme-color"]').content = blue;
 
-    const ul = $("#pillarList");
-    D.site.pillars.forEach((p) => ul.append(h("li", { text: p })));
-
-    $("#mottoText").textContent = `“${D.site.motto}”`;
-    $("#mottoRef").textContent = D.site.mottoReference;
+    withEl("#pillarList", (ul) => D.site.pillars.forEach((p) => ul.append(h("li", { text: p }))));
+    withEl("#mottoText", (el) => (el.textContent = `“${D.site.motto}”`));
+    withEl("#mottoRef", (el) => (el.textContent = D.site.mottoReference));
+    withEl("#nationalLink", (el) => (el.href = D.site.nationalUrl));
+    // Every "Join the family" button opens the family WhatsApp group (contact.familyWhatsAppGroup in site.js).
+    $$("[data-family]").forEach((a) => {
+      if (D.contact.familyWhatsAppGroup) a.href = D.contact.familyWhatsAppGroup;
+      else a.hidden = true;
+    });
     $("#footMotto").textContent = `${D.site.motto} (${D.site.mottoReference})`;
     $("#copyright").textContent =
       `© ${D.site.year} ${D.site.fullName}. Part of NUBS Ghana and the Ghana Baptist Convention.`;
-    $("#nationalLink").href = D.site.nationalUrl;
   }
 
   /* ---------- This week: countdown + word ---------------------------------- */
@@ -234,20 +313,19 @@ function raf(fn) {
     setInterval(tick, 1000);
   }
 
-  // Word of the year and the theme pictures. index.html holds the same values as a fallback.
+  // Word of the year (home page) and the theme pictures (about page). The pages hold the same values as a fallback.
   function renderYearTheme() {
     const t = D.yearTheme;
-    $("#weekVerse").textContent = `“${t.verse}”`;
-    $("#weekRef").textContent = t.reference;
-    $("#weekSession").textContent = t.session;
-    $("#themeSession").textContent = `Our theme for ${t.session}`;
+    withEl("#weekVerse", (el) => (el.textContent = `“${t.verse}”`));
+    withEl("#weekRef", (el) => (el.textContent = t.reference));
+    withEl("#weekSession", (el) => (el.textContent = t.session));
+    withEl("#themeSession", (el) => (el.textContent = `Our theme for ${t.session}`));
     const pic = (id, src, alt) => {
-      if (!src) return;
+      if (!src || !$(id)) return;
       $(id).src = src;
       $(id).alt = alt || `Theme of the year ${t.session}`;
     };
     pic("#themeWide", t.wideImage, t.wideAlt);
-    pic("#themeSquare", t.squareImage, t.squareAlt);
   }
 
   /* ---------- Schedule ------------------------------------------------------ */
@@ -460,8 +538,7 @@ function raf(fn) {
   function renderLibrary() {
     const books = D.books || [];
     const grid = $("#bookGrid");
-    $("#libCount").textContent = books.length ? String(books.length) : "";
-    const PAGE = 4;
+    const PAGE = 12;
     let shown = PAGE;
     const more = $("#bookMore");
     const draw = () => {
@@ -534,14 +611,6 @@ function raf(fn) {
       { rootMargin: "-10% 0px -10% 0px" }
     ).observe(grid);
     draw();
-    const tabs = { s: [$("#tabSermons"), $("#panelSermons")], l: [$("#tabLibrary"), $("#panelLibrary")] };
-    const show = (k) =>
-      Object.entries(tabs).forEach(([key, [t, p]]) => {
-        t.setAttribute("aria-selected", String(key === k));
-        p.hidden = key !== k;
-      });
-    tabs.s[0].addEventListener("click", () => show("s"));
-    tabs.l[0].addEventListener("click", () => show("l"));
   }
 
   function renderSermons() {
@@ -721,10 +790,12 @@ function raf(fn) {
       out.textContent = "WhatsApp is opening with your question ready. Just press send.";
       form.reset();
     });
+  }
 
-    // Help Desk dialog link
+  // The Freshers Help Desk pop-up is on every page.
+  function setupHelpdesk() {
     const hd = $("#hdWhatsApp");
-    if (groupLink) hd.href = groupLink;
+    if (D.contact.freshersWhatsAppGroup) hd.href = D.contact.freshersWhatsAppGroup;
     else {
       hd.setAttribute("aria-disabled", "true");
       hd.removeAttribute("href");
@@ -1044,6 +1115,145 @@ function raf(fn) {
     $("#prayerNote").textContent = D.forms.prayerPrivacyNote;
   }
 
+  /* ---------- Affiliations ------------------------------------------------------ */
+
+  // Other websites open in a new tab; pages of this site (like /about) open in the same tab.
+  const linkAttrs = (url) =>
+    /^https?:/.test(url) ? { href: url, target: "_blank", rel: "noopener" } : { href: url };
+  const domain = (url) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+
+  function renderMotherChurch() {
+    const c = D.motherChurch;
+    if (!c) return;
+    const inner = [
+      h(
+        "div",
+        { class: "mother-main" },
+        h("span", { class: "family-badge", "aria-hidden": "true", text: c.short }),
+        h("p", { class: "label", text: "Our mother church" }),
+        h("h3", {}, c.name),
+        h("p", { text: c.text }),
+        c.url ? h("span", { class: "family-go", text: `Visit ${domain(c.url)} \u2197` }) : null
+      ),
+      c.details && c.details.length
+        ? h(
+            "dl",
+            { class: "mother-facts" },
+            c.details.map((d) => h("div", {}, h("dt", { text: d.label }), h("dd", { text: d.value })))
+          )
+        : null,
+    ];
+    $("#motherChurch").append(
+      c.url
+        ? h("a", { class: "card mother-card glow", ...linkAttrs(c.url) }, inner)
+        : h("div", { class: "card mother-card" }, inner)
+    );
+  }
+
+  function renderAffiliations() {
+    const list = $("#familyTree");
+    D.affiliations.forEach((a, i) => {
+      const last = i === D.affiliations.length - 1;
+      const inner = [
+        h("span", { class: "family-badge", "aria-hidden": "true", text: a.short }),
+        h(
+          "div",
+          { class: "family-body" },
+          h("p", { class: "label", text: a.role }),
+          h("h3", {}, a.name),
+          h("p", { text: a.text }),
+          a.facts && a.facts.length
+            ? h(
+                "ul",
+                { class: "family-facts" },
+                a.facts.map((f) => h("li", { text: f }))
+              )
+            : null,
+          a.url
+            ? h("span", {
+                class: "family-go",
+                text: /^https?:/.test(a.url) ? `Visit ${domain(a.url)} \u2197` : "Read about us \u2192",
+              })
+            : null
+        ),
+      ];
+      list.append(
+        h(
+          "li",
+          { class: "family-step" + (last ? " is-us" : "") },
+          a.url
+            ? h("a", { class: "card family-card", ...linkAttrs(a.url) }, inner)
+            : h("div", { class: "card family-card" }, inner)
+        )
+      );
+    });
+  }
+
+  function renderCampuses() {
+    const grid = $("#campusGrid");
+    const pick = $("#sectorPick");
+    let current = "All";
+
+    function tile(c) {
+      const kids = [
+        h("span", { class: "campus-short", "aria-hidden": "true", text: c.short }),
+        h("h3", {}, c.name),
+        h("p", { class: "campus-school", text: c.school }),
+        h("p", { class: "campus-meta", text: `${c.place} \u00B7 ${c.sector} sector` }),
+        // Campuses without a website get no line here.
+        c.here || c.url
+          ? h("span", { class: "campus-go", text: c.here ? "You are here" : `Visit ${domain(c.url)} \u2197` })
+          : null,
+      ];
+      const cls = "card campus glow" + (c.here ? " is-us" : "") + (c.url ? " has-link" : "");
+      return c.url && !c.here
+        ? h("a", { class: cls, ...linkAttrs(c.url) }, kids)
+        : h("article", { class: cls }, kids);
+    }
+    // The last tile stands for the many local unions not listed yet.
+    const rest = h(
+      "article",
+      { class: "card campus campus-more glow" },
+      h("span", { class: "campus-short", "aria-hidden": "true", text: "50+" }),
+      h("h3", { text: "And many more" }),
+      h("p", {
+        class: "campus-school",
+        text: "Local unions in universities, technical universities and colleges of education in every sector.",
+      }),
+      h("a", { class: "campus-go", href: "/contact" }, "Know a campus we missed? Tell us \u2192")
+    );
+
+    const draw = () =>
+      grid.replaceChildren(
+        ...D.campusUnions.filter((c) => current === "All" || c.sector === current).map(tile),
+        rest
+      );
+    const count = (name) => D.campusUnions.filter((c) => name === "All" || c.sector === name).length;
+    [{ name: "All", regions: "Every campus listed here" }, ...D.nubsSectors].forEach((s) =>
+      pick.append(
+        h(
+          "button",
+          {
+            class: "sector",
+            type: "button",
+            "aria-pressed": String(s.name === current),
+            onclick: (e) => {
+              current = s.name;
+              $$(".sector", pick).forEach((b) =>
+                b.setAttribute("aria-pressed", String(b === e.currentTarget))
+              );
+              draw();
+            },
+          },
+          h("b", { text: s.name === "All" ? "All sectors" : s.name }),
+          h("span", { text: s.regions }),
+          h("em", { text: `${count(s.name)} listed` })
+        )
+      )
+    );
+    draw();
+  }
+
   /* ---------- Dialogs ------------------------------------------------------------ */
 
   function setupDialogs() {
@@ -1121,25 +1331,189 @@ function raf(fn) {
       out.textContent = "WhatsApp is opening with your details ready. Just press send.";
       form.reset();
     });
-    $("#prayerForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const out = $("#prayerMsg");
-      const req = $("#prayerText").value.trim();
-      const who = $("#prayerName").value.trim();
-      if (!req) {
-        out.className = "form-msg err";
-        out.textContent = "Please type your prayer request first.";
-        return;
-      }
-      window.open(
-        waLink(D.contact.prayerWhatsApp, `Prayer request${who ? " from " + who : ""}: ${req}`),
-        "_blank",
-        "noopener"
+    withEl("#prayerForm", (f) =>
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const out = $("#prayerMsg");
+        const req = $("#prayerText").value.trim();
+        const who = $("#prayerName").value.trim();
+        if (!req) {
+          out.className = "form-msg err";
+          out.textContent = "Please type your prayer request first.";
+          return;
+        }
+        window.open(
+          waLink(D.contact.prayerWhatsApp, `Prayer request${who ? " from " + who : ""}: ${req}`),
+          "_blank",
+          "noopener"
+        );
+        out.className = "form-msg ok";
+        out.textContent = "WhatsApp is opening with your request ready. Just press send.";
+        e.target.reset();
+      })
+    );
+  }
+
+  /* ---------- Motion -------------------------------------------------------------
+     Cards slide up as they scroll into view, new photos/sermons/books pop in, cards
+     glow where the pointer is, buttons lean towards it, and a thin line under the menu
+     shows how far down the page you are. Page-to-page transitions are pure CSS
+     (search "Motion" in style.css). All of it is skipped when the phone asks for less motion. */
+
+  function setupMotion() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.documentElement.classList.add("motion");
+
+    const REVEAL = [
+      ".head",
+      ".card",
+      ".sched-card",
+      ".aux-card",
+      ".tg-card",
+      ".ev-card",
+      ".notice",
+      ".leader",
+      ".explore-card",
+      ".next-link",
+      ".fr-hero",
+      ".fr-contact",
+      ".faq",
+      ".photo-frame",
+      ".about-copy",
+      ".action-list li",
+      ".motto",
+      ".theme-collage",
+      ".contact-list > div",
+      ".social",
+      ".cross-link",
+      ".sector-pick",
+    ].join(",");
+    // Every time an element comes into view it slides in again, scrolling down or back up.
+    const io = new IntersectionObserver(
+      (entries) => {
+        let i = 0;
+        entries.forEach((e) => {
+          const el = e.target;
+          if (e.isIntersecting) {
+            // cards that arrive together come in one after another
+            el.style.setProperty("--d", `${Math.min(i++ * 70, 420)}ms`);
+            el.classList.add("in");
+          } else {
+            el.style.setProperty("--d", "0ms");
+            el.classList.remove("in");
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    $$(REVEAL)
+      .filter(
+        (el) => !el.closest(".hero, .page-hero, dialog, .campus-grid") && !el.parentElement.closest(REVEAL)
+      )
+      .forEach((el) => {
+        el.classList.add("reveal");
+        io.observe(el);
+      });
+
+    // Home page: the headings and welcome words write themselves in, word by word, like the
+    // message under the leadership cards. Each word becomes a <nubs-w> element.
+    if ($(".hero")) {
+      const writeIO = new IntersectionObserver((entries) =>
+        entries.forEach((e) => e.target.classList.toggle("writing", e.isIntersecting))
       );
-      out.className = "form-msg ok";
-      out.textContent = "WhatsApp is opening with your request ready. Just press send.";
-      e.target.reset();
+      $$(".hero h1, .hero-lede, main h2, main .head-note, #weekVerse").forEach((el) => {
+        let i = 0;
+        const walk = (node) =>
+          [...node.childNodes].forEach((n) => {
+            if (n.nodeType === 1) return walk(n);
+            if (n.nodeType !== 3 || !n.nodeValue.trim()) return;
+            const frag = document.createDocumentFragment();
+            n.nodeValue.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) frag.append(part);
+              else frag.append(h("nubs-w", { style: `--i:${Math.min(i++, 40)}`, text: part }));
+            });
+            n.replaceWith(frag);
+          });
+        walk(el);
+        el.classList.add("write");
+        writeIO.observe(el);
+      });
+    }
+
+    // Banner words, the home photo and photo/sermon/book/campus grids replay their entrance
+    // animation each time they come back into view.
+    const replay = new IntersectionObserver((entries) =>
+      entries.forEach((e) => e.target.classList.toggle("replay-off", !e.isIntersecting))
+    );
+    $$(".hero-in, .page-hero .wrap, .gallery, .sermon-list, .book-grid, .campus-grid").forEach((el) =>
+      replay.observe(el)
+    );
+
+    // Photos, sermons and books added by a filter or "show more" pop in one after another.
+    const stagger = (nodes) =>
+      nodes.filter((n) => n.nodeType === 1).forEach((n, i) => n.style.setProperty("--n", Math.min(i, 12)));
+    $$(".gallery, .sermon-list, .book-grid, .campus-grid").forEach((list) => {
+      stagger([...list.children]);
+      new MutationObserver((muts) => stagger(muts.flatMap((m) => [...m.addedNodes]))).observe(list, {
+        childList: true,
+      });
     });
+
+    // Reading progress line, and a shadow under the menu once the page has moved.
+    const bar = h("div", { class: "scroll-bar", "aria-hidden": "true" });
+    document.body.append(bar);
+    const header = $(".header");
+    const sync = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.setProperty("--p", max > 0 ? (scrollY / max).toFixed(4) : "0");
+      header.classList.toggle("scrolled", scrollY > 8);
+    };
+    addEventListener("scroll", raf(sync), { passive: true });
+    addEventListener("resize", sync);
+    sync();
+
+    // Mouse only (not touch): cards glow where the pointer is, buttons lean towards it.
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    // (.campus tiles are redrawn by the sector buttons, so they carry "glow" from the start.)
+    $$(
+      ".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice, .family-card, .sector"
+    ).forEach((el) => el.classList.add("glow"));
+    // The theme picture on the About page tilts towards the pointer.
+    withEl(".theme-collage", (box) => {
+      box.addEventListener("pointermove", (e) => {
+        const r = box.getBoundingClientRect();
+        box.style.setProperty("--tx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        box.style.setProperty("--ty", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      box.addEventListener("pointerleave", () => {
+        box.style.removeProperty("--tx");
+        box.style.removeProperty("--ty");
+      });
+    });
+    let leaning = null;
+    document.addEventListener(
+      "pointermove",
+      (e) => {
+        const t = e.target instanceof Element ? e.target : null;
+        const card = t && t.closest(".glow");
+        if (card) {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+          card.style.setProperty("--my", `${e.clientY - r.top}px`);
+        }
+        const btn = t && t.closest(".btn");
+        if (leaning && leaning !== btn) leaning.style.translate = "";
+        leaning = btn;
+        if (btn) {
+          const r = btn.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width - 0.5) * 8;
+          const y = ((e.clientY - r.top) / r.height - 0.5) * 6;
+          btn.style.translate = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+        }
+      },
+      { passive: true }
+    );
   }
 
   /* ---------- Highlight "NUBS" and "Christ" in yellow, everywhere ---------------- */
@@ -1182,26 +1556,34 @@ function raf(fn) {
   /* ---------- Start ------------------------------------------------------------------ */
 
   // Each step runs on its own, so a problem in one part of the page never stops the others.
+  // A step with an id next to it only runs on the page that has that element.
   [
-    setupMenu,
-    setupDialogs,
-    renderChrome,
-    renderWeek,
-    renderYearTheme,
-    renderSchedule,
-    renderAuxiliaries,
-    renderQuiz,
-    renderSermons,
-    renderLibrary,
-    renderFreshers,
-    renderEvents,
-    renderNotices,
-    renderLeaders,
-    renderGallery,
-    renderContact,
-    setupForms,
-    highlightKeywords, // keep this last: it scans the finished page
-  ].forEach((step) => {
+    [setupMenu],
+    [setupPages],
+    [setupDialogs],
+    [setupHelpdesk],
+    [renderChrome],
+    [renderWeek, "#countdown"],
+    [renderYearTheme],
+    [renderSchedule, "#scheduleList"],
+    [renderAuxiliaries, "#auxGrid"],
+    [renderQuiz, "#quizBody"],
+    [renderSermons, "#sermonList"],
+    [renderLibrary, "#bookGrid"],
+    [renderFreshers, "#freshers"],
+    [renderEvents, "#eventList"],
+    [renderNotices, "#noticeList"],
+    [renderLeaders, "#leaderList"],
+    [renderGallery, "#galleryGrid"],
+    [renderContact, "#contactList"],
+    [renderMotherChurch, "#motherChurch"],
+    [renderAffiliations, "#familyTree"],
+    [renderCampuses, "#campusGrid"],
+    [setupForms],
+    [setupMotion],
+    [highlightKeywords], // keep this last: it scans the finished page
+  ].forEach(([step, onlyIf]) => {
+    if (onlyIf && !$(onlyIf)) return;
     try {
       step();
     } catch (err) {

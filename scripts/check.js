@@ -20,6 +20,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { pages, block, BLOCKS } = require("./sync-pages.js");
 
 const ROOT = path.join(__dirname, "..");
 const PUB = path.join(ROOT, "public");
@@ -181,6 +182,10 @@ const HOME = {
   notices: "notices.js",
   leadersParagraph: "leaders.js",
   leaders: "leaders.js",
+  affiliations: "affiliations.js",
+  campusUnions: "affiliations.js",
+  nubsSectors: "affiliations.js",
+  motherChurch: "affiliations.js",
   gallery: "gallery.js",
 };
 for (const [key, file] of Object.entries(HOME))
@@ -210,6 +215,7 @@ if (needObject("content/site.js", "contact", D.contact)) {
   }
   needWhatsApp(w, "prayerWhatsApp", c.prayerWhatsApp);
   needLink(w, "freshersWhatsAppGroup", c.freshersWhatsAppGroup);
+  needLink(w, "familyWhatsAppGroup", c.familyWhatsAppGroup);
   if (needObject(w, "social", c.social)) {
     knownKeys(`${w} > social`, c.social, ["instagram", "facebook", "youtube", "tiktok", "whatsappChannel"]);
     for (const [k, v] of Object.entries(c.social)) needLink(`${w} > social`, k, v);
@@ -220,7 +226,6 @@ if (needObject("content/site.js", "yearTheme", D.yearTheme)) {
   const w = "content/site.js > yearTheme";
   needText(w, D.yearTheme, "session", "verse", "reference");
   needFile(w, "wideImage", D.yearTheme.wideImage, { picture: true });
-  needFile(w, "squareImage", D.yearTheme.squareImage, { picture: true });
 }
 
 if (needObject("content/site.js", "forms", D.forms)) needText("content/site.js > forms", D.forms, "prayerPrivacyNote");
@@ -356,6 +361,43 @@ if (needList("content/leaders.js", "leaders", D.leaders)) {
   });
 }
 
+if (needObject("content/affiliations.js", "motherChurch", D.motherChurch)) {
+  const m = D.motherChurch;
+  const w = "content/affiliations.js > motherChurch";
+  knownKeys(w, m, ["short", "name", "text", "details", "url"]);
+  needText(w, m, "short", "name", "text");
+  if (m.details !== undefined && (!Array.isArray(m.details) || !m.details.every((d) => d && filled(d.label) && filled(d.value))))
+    problem(w, `"details" should be a list like [{ label: "Where", value: "Staff Village, Legon" }].`);
+  needLink(w, "url", m.url);
+}
+if (needList("content/affiliations.js", "affiliations", D.affiliations)) {
+  D.affiliations.forEach((a, i) => {
+    const w = label("affiliations.js", "affiliations", i, a.name);
+    knownKeys(w, a, ["short", "name", "role", "text", "facts", "url"]);
+    needText(w, a, "short", "name", "role", "text");
+    if (a.facts !== undefined && (!Array.isArray(a.facts) || !a.facts.every(filled)))
+      problem(w, `"facts" should be a list of short words, like ["Since 1964", "30 associations"].`);
+    if (filled(a.url) && !a.url.startsWith("/")) needLink(w, "url", a.url);
+  });
+}
+const SECTORS = Array.isArray(D.nubsSectors) ? D.nubsSectors.map((s) => s && s.name) : [];
+if (needList("content/affiliations.js", "nubsSectors", D.nubsSectors))
+  D.nubsSectors.forEach((s, i) => {
+    const w = label("affiliations.js", "nubsSectors", i, s.name);
+    knownKeys(w, s, ["name", "regions"]);
+    needText(w, s, "name", "regions");
+  });
+if (needList("content/affiliations.js", "campusUnions", D.campusUnions)) {
+  D.campusUnions.forEach((c, i) => {
+    const w = label("affiliations.js", "campusUnions", i, c.name);
+    knownKeys(w, c, ["short", "name", "school", "place", "sector", "url", "here"]);
+    needText(w, c, "short", "name", "school", "place", "sector");
+    if (filled(c.sector) && SECTORS.length && !SECTORS.includes(c.sector))
+      problem(w, `"sector" says "${c.sector}". It must be one of: ${SECTORS.join(", ")}.`);
+    needLink(w, "url", c.url);
+  });
+}
+
 if (needList("content/gallery.js", "gallery", D.gallery)) {
   const seen = new Set();
   D.gallery.forEach((g, i) => {
@@ -400,7 +442,7 @@ for (const c of ["blue", "navy", "gold"]) {
 for (const [name, v] of Object.entries(theme))
   if (/^#/.test(v) && !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) problem("css/theme.css", `"${name}" is not a valid colour code: ${v}. A code is # followed by 6 letters or digits.`);
 
-/* ---------- 4. The page itself (index.html and main.js) ---------------------------- */
+/* ---------- 4. The pages (index.html, about.html, ...) and main.js ------------------ */
 
 try {
   new vm.Script(read("js/main.js"), { filename: "js/main.js" });
@@ -408,15 +450,60 @@ try {
   problem("js/main.js", `This script has a mistake and will not run: ${err.message}`);
 }
 
-const ids = [...indexHtml.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
-const idSet = new Set(ids);
-ids.filter((id, i) => ids.indexOf(id) !== i).forEach((id) => problem("index.html", `The id "${id}" is used twice. Every id must be used only once.`));
+// Every page of the site (index.html, about.html, ...). The shared parts come from index.html.
+const PAGE_FILES = pages();
+const idSet = new Set();
+for (const f of PAGE_FILES) {
+  const ids = [...read(f).matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  ids.forEach((id) => idSet.add(id));
+  new Set(ids.filter((id, i) => ids.indexOf(id) !== i)).forEach((id) => problem(f, `The id "${id}" is used twice. Every id must be used only once on a page.`));
+}
 const mainJs = read("js/main.js");
 for (const id of new Set([...mainJs.matchAll(/["'`]#([A-Za-z][\w-]*)(?=["'` ])/g)].map((m) => m[1])))
-  if (!idSet.has(id)) problem("index.html", `main.js looks for an element with id="${id}" but index.html does not have one. It may have been deleted or renamed.`);
+  if (!idSet.has(id)) problem("index.html", `main.js looks for an element with id="${id}" but no page has one. It may have been deleted or renamed.`);
 
-// Files the page refers to directly.
-for (const f of ["index.html", "404.html", "css/style.css", "css/theme.css", "js/main.js"]) {
+// The shared parts (menu, footer, pop-ups, scripts) must be the same on every page.
+for (const name of BLOCKS) {
+  const want = block(indexHtml, name);
+  if (!want) {
+    problem("index.html", `The ${name} part is missing. Put back its <!-- ${name}: --> and <!-- /${name} --> lines.`);
+    continue;
+  }
+  for (const f of PAGE_FILES.filter((p) => p !== "index.html")) {
+    const got = block(read(f), name);
+    if (!got) problem(f, `The ${name} part is missing. Copy it from index.html, then run  npm run sync`);
+    else if (got !== want) problem(f, `The ${name} part is different from index.html. Make the change in index.html, then run  npm run sync`);
+  }
+}
+
+// Each page needs its own title, description and address for search engines, and a line in sitemap.xml.
+const sitemap = read("sitemap.xml");
+const seen = { title: new Map(), description: new Map() };
+for (const f of PAGE_FILES) {
+  const html = read(f);
+  const url = `https://nubslegon.com/${f === "index.html" ? "" : f.replace(/\.html$/, "")}`;
+  const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1];
+  const desc = (html.match(/<meta name="description" content="([^"]*)">/) || [])[1];
+  const canon = (html.match(/<link rel="canonical" href="([^"]*)">/) || [])[1];
+  if (!filled(title)) problem(f, "The page has no <title>. Search engines show it as the headline.");
+  if (!filled(desc)) problem(f, 'The page has no <meta name="description">. Search engines show it under the headline.');
+  else if (desc.length > 170) note(f, `The description is ${desc.length} characters. Google cuts it off after about 160.`);
+  if (canon !== url) problem(f, `The canonical link must be  ${url}  (it says ${canon || "nothing"}).`);
+  if (!sitemap.includes(`<loc>${url}</loc>`)) problem("sitemap.xml", `${f} is missing. Add  <url><loc>${url}</loc></url>`);
+  for (const [k, v] of [["title", title], ["description", desc]]) {
+    if (!filled(v)) continue;
+    if (seen[k].has(v)) problem(f, `It has the same ${k} as ${seen[k].get(v)}. Every page needs its own.`);
+    else seen[k].set(v, f);
+  }
+  // Links to other pages, like href="/events", must lead to a page that exists.
+  for (const m of html.matchAll(/href="\/([a-z-]*)(?:[?#][^"]*)?"/g))
+    if (m[1] && !FILE_SET.has(`${m[1]}.html`)) problem(f, `It links to "/${m[1]}" but there is no ${m[1]}.html page.`);
+}
+for (const m of sitemap.matchAll(/<loc>https:\/\/nubslegon\.com\/([a-z-]*)<\/loc>/g))
+  if (!PAGE_FILES.includes(`${m[1] || "index"}.html`)) problem("sitemap.xml", `It lists /${m[1]} but there is no such page.`);
+
+// Files the pages refer to directly.
+for (const f of [...PAGE_FILES, "404.html", "css/style.css", "css/theme.css", "js/main.js"]) {
   for (const m of read(f).matchAll(/(?:src|href|content)="(?:https:\/\/nubslegon\.com)?\/?((?:assets|css|js|content)\/[^"?#]+)"|url\(["']?(?:\.\.\/)?(assets\/[^"')]+)["']?\)|"(assets\/[^"]+\.\w+)"/g)) {
     const rel = m[1] || m[2] || m[3];
     if (FILE_SET.has(rel)) used.add(rel);
