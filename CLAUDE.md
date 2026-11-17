@@ -70,12 +70,19 @@ every content, theme or id change, and also confirm the affected section still r
   Workers (static assets) rebuild. Rollback: `git revert HEAD` + push, or Worker > Deployments in the dashboard.
 - Domain bought on Porkbun, nameservers point to Cloudflare, DNS managed in Cloudflare. Custom domains must be
   added from Worker > Settings > Domains (records added by hand aren't Worker-type/proxied and break the site).
+- `www.` 301-redirects to the apex via a Cloudflare Redirect Rule (zone > Rules > Redirect Rules, "Redirect from WWW
+  to root", query string preserved so `?s=` tags survive). The dashboard warns www has no proxied DNS record; that is
+  expected for a Worker custom domain, so don't add one.
 - Keep `public/` free of large non-site files: the Cloudflare build fails on assets over its size limit (a stray
   `.git` pack once did this, which is why the site moved to `public/`). The check fails on non-site files in `public/`.
 - SEO in `index.html`: canonical, Open Graph + Twitter card, `WebSite` + `Organization` JSON-LD (parent org
   NUBS Ghana, `sameAs` Instagram/TikTok/WhatsApp channel). Link preview image is `assets/images/og-image-v2.jpg` (1200x630); a new
   preview image needs a new filename and both `og:image` and `twitter:image` updated. Favicons must be square,
   multiples of 48 px.
+- Search Console "Page with redirect" (http, www, `/index.html`) and "Alternate page with proper canonical tag"
+  (`?s=` URLs) are expected and need no fix.
+- Name variants people search for (NUBS UG, NUBS University of Ghana, Baptist students University of Ghana) are in
+  the `<title>`, meta description, About lead, footer line and JSON-LD `alternateName`. Keep them when editing copy.
 - If link previews stop working, Cloudflare's Bot Fight Mode / "Block AI bots" may be blocking crawlers.
 - Marketing links use `?s=<channel>` query tags (e.g. `?s=church`) to attribute traffic in Cloudflare Analytics.
   Don't strip or break query-string handling.
