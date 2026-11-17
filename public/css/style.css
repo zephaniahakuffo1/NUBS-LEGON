@@ -1372,9 +1372,23 @@ textarea:focus {
 .foot-credit {
   opacity: 0.75;
 }
-.foot-credit span {
+.footer .foot-credit a {
   color: #fff;
+  font-size: inherit;
   font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.foot-credit:has(a:hover, a:focus-visible) {
+  opacity: 1;
+}
+.footer .foot-credit a:hover,
+.footer .foot-credit a:focus-visible {
+  color: var(--gold);
+  border-color: var(--gold);
 }
 
 /* ---- Floating button, dialogs ---------------------------------------- */
