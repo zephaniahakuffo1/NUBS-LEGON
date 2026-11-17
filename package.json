@@ -7,6 +7,7 @@
   "scripts": {
     "start": "npx --yes serve public -l 3000",
     "check": "node scripts/check.js",
+    "sync": "node scripts/sync-pages.js",
     "format": "npx --yes prettier --write \"public/content/*.js\" \"public/js/*.js\" \"public/css/*.css\" \"scripts/*.js\" \"*.md\" \"docs/*.md\""
   }
 }

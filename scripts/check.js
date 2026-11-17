@@ -20,6 +20,7 @@
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
+const { pages, block, BLOCKS } = require("./sync-pages.js");
 
 const ROOT = path.join(__dirname, "..");
 const PUB = path.join(ROOT, "public");
@@ -400,7 +401,7 @@ for (const c of ["blue", "navy", "gold"]) {
 for (const [name, v] of Object.entries(theme))
   if (/^#/.test(v) && !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) problem("css/theme.css", `"${name}" is not a valid colour code: ${v}. A code is # followed by 6 letters or digits.`);
 
-/* ---------- 4. The page itself (index.html and main.js) ---------------------------- */
+/* ---------- 4. The pages (index.html, about.html, ...) and main.js ------------------ */
 
 try {
   new vm.Script(read("js/main.js"), { filename: "js/main.js" });
@@ -408,15 +409,60 @@ try {
   problem("js/main.js", `This script has a mistake and will not run: ${err.message}`);
 }
 
-const ids = [...indexHtml.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
-const idSet = new Set(ids);
-ids.filter((id, i) => ids.indexOf(id) !== i).forEach((id) => problem("index.html", `The id "${id}" is used twice. Every id must be used only once.`));
+// Every page of the site (index.html, about.html, ...). The shared parts come from index.html.
+const PAGE_FILES = pages();
+const idSet = new Set();
+for (const f of PAGE_FILES) {
+  const ids = [...read(f).matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  ids.forEach((id) => idSet.add(id));
+  new Set(ids.filter((id, i) => ids.indexOf(id) !== i)).forEach((id) => problem(f, `The id "${id}" is used twice. Every id must be used only once on a page.`));
+}
 const mainJs = read("js/main.js");
 for (const id of new Set([...mainJs.matchAll(/["'`]#([A-Za-z][\w-]*)(?=["'` ])/g)].map((m) => m[1])))
-  if (!idSet.has(id)) problem("index.html", `main.js looks for an element with id="${id}" but index.html does not have one. It may have been deleted or renamed.`);
+  if (!idSet.has(id)) problem("index.html", `main.js looks for an element with id="${id}" but no page has one. It may have been deleted or renamed.`);
 
-// Files the page refers to directly.
-for (const f of ["index.html", "404.html", "css/style.css", "css/theme.css", "js/main.js"]) {
+// The shared parts (menu, footer, pop-ups, scripts) must be the same on every page.
+for (const name of BLOCKS) {
+  const want = block(indexHtml, name);
+  if (!want) {
+    problem("index.html", `The ${name} part is missing. Put back its <!-- ${name}: --> and <!-- /${name} --> lines.`);
+    continue;
+  }
+  for (const f of PAGE_FILES.filter((p) => p !== "index.html")) {
+    const got = block(read(f), name);
+    if (!got) problem(f, `The ${name} part is missing. Copy it from index.html, then run  npm run sync`);
+    else if (got !== want) problem(f, `The ${name} part is different from index.html. Make the change in index.html, then run  npm run sync`);
+  }
+}
+
+// Each page needs its own title, description and address for search engines, and a line in sitemap.xml.
+const sitemap = read("sitemap.xml");
+const seen = { title: new Map(), description: new Map() };
+for (const f of PAGE_FILES) {
+  const html = read(f);
+  const url = `https://nubslegon.com/${f === "index.html" ? "" : f.replace(/\.html$/, "")}`;
+  const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1];
+  const desc = (html.match(/<meta name="description" content="([^"]*)">/) || [])[1];
+  const canon = (html.match(/<link rel="canonical" href="([^"]*)">/) || [])[1];
+  if (!filled(title)) problem(f, "The page has no <title>. Search engines show it as the headline.");
+  if (!filled(desc)) problem(f, 'The page has no <meta name="description">. Search engines show it under the headline.');
+  else if (desc.length > 170) note(f, `The description is ${desc.length} characters. Google cuts it off after about 160.`);
+  if (canon !== url) problem(f, `The canonical link must be  ${url}  (it says ${canon || "nothing"}).`);
+  if (!sitemap.includes(`<loc>${url}</loc>`)) problem("sitemap.xml", `${f} is missing. Add  <url><loc>${url}</loc></url>`);
+  for (const [k, v] of [["title", title], ["description", desc]]) {
+    if (!filled(v)) continue;
+    if (seen[k].has(v)) problem(f, `It has the same ${k} as ${seen[k].get(v)}. Every page needs its own.`);
+    else seen[k].set(v, f);
+  }
+  // Links to other pages, like href="/events", must lead to a page that exists.
+  for (const m of html.matchAll(/href="\/([a-z-]*)(?:[?#][^"]*)?"/g))
+    if (m[1] && !FILE_SET.has(`${m[1]}.html`)) problem(f, `It links to "/${m[1]}" but there is no ${m[1]}.html page.`);
+}
+for (const m of sitemap.matchAll(/<loc>https:\/\/nubslegon\.com\/([a-z-]*)<\/loc>/g))
+  if (!PAGE_FILES.includes(`${m[1] || "index"}.html`)) problem("sitemap.xml", `It lists /${m[1]} but there is no such page.`);
+
+// Files the pages refer to directly.
+for (const f of [...PAGE_FILES, "404.html", "css/style.css", "css/theme.css", "js/main.js"]) {
   for (const m of read(f).matchAll(/(?:src|href|content)="(?:https:\/\/nubslegon\.com)?\/?((?:assets|css|js|content)\/[^"?#]+)"|url\(["']?(?:\.\.\/)?(assets\/[^"')]+)["']?\)|"(assets\/[^"]+\.\w+)"/g)) {
     const rel = m[1] || m[2] || m[3];
     if (FILE_SET.has(rel)) used.add(rel);

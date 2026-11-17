@@ -15,9 +15,10 @@ function raf(fn) {
    NUBS LEGON — PAGE SCRIPT
    --------------------------------------------------------------------------
    Reads everything from NUBS_DATA (the files in content/) and builds the page.
-   Every section follows the same pattern:
+   The same script runs on every page (index.html, about.html, ...). Every
+   section follows the same pattern:
 
-       1. find the empty container in index.html
+       1. find the empty container on the page (skipped if this page has none)
        2. loop over the matching list in the content file
        3. create one card per item and put it in the container
 
@@ -26,7 +27,8 @@ function raf(fn) {
 
    FILE MAP (search for the function name)
      helpers            $, $$, h() safe element builder, date and phone helpers
-     renderChrome       header text, hero, pillars, footer
+     setupPages         marks the current page in the menu; old #links go to the new pages
+     renderChrome       pillars, motto, footer
      renderWeek         countdown to the next meeting + word and theme of the year
      renderSchedule     weekly rhythm cards
      renderAuxiliaries  auxiliary cards; renderQuiz = "find your auxiliary"
@@ -38,7 +40,7 @@ function raf(fn) {
      renderLeaders      leadership cards + animated paragraph
      renderGallery      photo grid, filters, lightbox
      renderContact      contact details and social links
-     setupDialogs       join, help desk and photo pop-ups
+     setupDialogs       join, help desk and photo pop-ups; setupHelpdesk = its WhatsApp button
      setupForms         join and prayer forms (open WhatsApp, validate numbers)
      highlightKeywords  yellow highlight for "NUBS" and "Christ"
      (bottom)           scroll up / scroll down buttons
@@ -49,7 +51,30 @@ function raf(fn) {
 (function () {
   "use strict";
 
-  // index.html creates an empty NUBS_DATA, then each file in content/ fills in its own part.
+  // The site used to be one long page, so old links and posters say nubslegon.com/#freshers.
+  // Those now open the matching page. The ?s= tag in the link is kept for the visitor counts.
+  const MOVED = {
+    about: "/about",
+    identity: "/about#identity",
+    auxiliaries: "/auxiliaries",
+    quiz: "/auxiliaries#quiz",
+    sermons: "/sermons",
+    library: "/library",
+    freshers: "/freshers",
+    events: "/events",
+    notices: "/events#notices",
+    leadership: "/leadership",
+    gallery: "/gallery",
+    contact: "/contact",
+  };
+  const oldId = location.hash.slice(1);
+  if (MOVED[oldId] && !document.getElementById(oldId)) {
+    const [page, anchor] = MOVED[oldId].split("#");
+    location.replace(page + location.search + (anchor ? "#" + anchor : ""));
+    return;
+  }
+
+  // Every page creates an empty NUBS_DATA, then each file in content/ fills in its own part.
   const D = window.NUBS_DATA;
   if (!D) {
     console.error("NUBS_DATA is missing. Check the script order at the bottom of index.html.");
@@ -139,21 +164,33 @@ function raf(fn) {
     });
   }
 
+  // Runs fn(element) only when this page has that element.
+  function withEl(sel, fn) {
+    const el = $(sel);
+    if (el) fn(el);
+  }
+
+  // Lights up the current page in the menu and the footer.
+  function setupPages() {
+    const here = location.pathname.replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+    $$("#nav a, .footer nav a").forEach((a) => {
+      if (a.getAttribute("href") === here) a.setAttribute("aria-current", "page");
+    });
+  }
+
   function renderChrome() {
-    document.title = `${D.site.name} | ${D.site.theme}`;
+    // The page title is written in each page's <head> for search engines; it is not changed here.
     // The phone browser's address bar follows the blue in css/theme.css.
     const blue = getComputedStyle(document.documentElement).getPropertyValue("--blue").trim();
     if (blue) $('meta[name="theme-color"]').content = blue;
 
-    const ul = $("#pillarList");
-    D.site.pillars.forEach((p) => ul.append(h("li", { text: p })));
-
-    $("#mottoText").textContent = `“${D.site.motto}”`;
-    $("#mottoRef").textContent = D.site.mottoReference;
+    withEl("#pillarList", (ul) => D.site.pillars.forEach((p) => ul.append(h("li", { text: p }))));
+    withEl("#mottoText", (el) => (el.textContent = `“${D.site.motto}”`));
+    withEl("#mottoRef", (el) => (el.textContent = D.site.mottoReference));
+    withEl("#nationalLink", (el) => (el.href = D.site.nationalUrl));
     $("#footMotto").textContent = `${D.site.motto} (${D.site.mottoReference})`;
     $("#copyright").textContent =
       `© ${D.site.year} ${D.site.fullName}. Part of NUBS Ghana and the Ghana Baptist Convention.`;
-    $("#nationalLink").href = D.site.nationalUrl;
   }
 
   /* ---------- This week: countdown + word ---------------------------------- */
@@ -234,15 +271,15 @@ function raf(fn) {
     setInterval(tick, 1000);
   }
 
-  // Word of the year and the theme pictures. index.html holds the same values as a fallback.
+  // Word of the year (home page) and the theme pictures (about page). The pages hold the same values as a fallback.
   function renderYearTheme() {
     const t = D.yearTheme;
-    $("#weekVerse").textContent = `“${t.verse}”`;
-    $("#weekRef").textContent = t.reference;
-    $("#weekSession").textContent = t.session;
-    $("#themeSession").textContent = `Our theme for ${t.session}`;
+    withEl("#weekVerse", (el) => (el.textContent = `“${t.verse}”`));
+    withEl("#weekRef", (el) => (el.textContent = t.reference));
+    withEl("#weekSession", (el) => (el.textContent = t.session));
+    withEl("#themeSession", (el) => (el.textContent = `Our theme for ${t.session}`));
     const pic = (id, src, alt) => {
-      if (!src) return;
+      if (!src || !$(id)) return;
       $(id).src = src;
       $(id).alt = alt || `Theme of the year ${t.session}`;
     };
@@ -460,8 +497,7 @@ function raf(fn) {
   function renderLibrary() {
     const books = D.books || [];
     const grid = $("#bookGrid");
-    $("#libCount").textContent = books.length ? String(books.length) : "";
-    const PAGE = 4;
+    const PAGE = 12;
     let shown = PAGE;
     const more = $("#bookMore");
     const draw = () => {
@@ -534,14 +570,6 @@ function raf(fn) {
       { rootMargin: "-10% 0px -10% 0px" }
     ).observe(grid);
     draw();
-    const tabs = { s: [$("#tabSermons"), $("#panelSermons")], l: [$("#tabLibrary"), $("#panelLibrary")] };
-    const show = (k) =>
-      Object.entries(tabs).forEach(([key, [t, p]]) => {
-        t.setAttribute("aria-selected", String(key === k));
-        p.hidden = key !== k;
-      });
-    tabs.s[0].addEventListener("click", () => show("s"));
-    tabs.l[0].addEventListener("click", () => show("l"));
   }
 
   function renderSermons() {
@@ -721,10 +749,12 @@ function raf(fn) {
       out.textContent = "WhatsApp is opening with your question ready. Just press send.";
       form.reset();
     });
+  }
 
-    // Help Desk dialog link
+  // The Freshers Help Desk pop-up is on every page.
+  function setupHelpdesk() {
     const hd = $("#hdWhatsApp");
-    if (groupLink) hd.href = groupLink;
+    if (D.contact.freshersWhatsAppGroup) hd.href = D.contact.freshersWhatsAppGroup;
     else {
       hd.setAttribute("aria-disabled", "true");
       hd.removeAttribute("href");
@@ -1121,25 +1151,27 @@ function raf(fn) {
       out.textContent = "WhatsApp is opening with your details ready. Just press send.";
       form.reset();
     });
-    $("#prayerForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const out = $("#prayerMsg");
-      const req = $("#prayerText").value.trim();
-      const who = $("#prayerName").value.trim();
-      if (!req) {
-        out.className = "form-msg err";
-        out.textContent = "Please type your prayer request first.";
-        return;
-      }
-      window.open(
-        waLink(D.contact.prayerWhatsApp, `Prayer request${who ? " from " + who : ""}: ${req}`),
-        "_blank",
-        "noopener"
-      );
-      out.className = "form-msg ok";
-      out.textContent = "WhatsApp is opening with your request ready. Just press send.";
-      e.target.reset();
-    });
+    withEl("#prayerForm", (f) =>
+      f.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const out = $("#prayerMsg");
+        const req = $("#prayerText").value.trim();
+        const who = $("#prayerName").value.trim();
+        if (!req) {
+          out.className = "form-msg err";
+          out.textContent = "Please type your prayer request first.";
+          return;
+        }
+        window.open(
+          waLink(D.contact.prayerWhatsApp, `Prayer request${who ? " from " + who : ""}: ${req}`),
+          "_blank",
+          "noopener"
+        );
+        out.className = "form-msg ok";
+        out.textContent = "WhatsApp is opening with your request ready. Just press send.";
+        e.target.reset();
+      })
+    );
   }
 
   /* ---------- Highlight "NUBS" and "Christ" in yellow, everywhere ---------------- */
@@ -1182,26 +1214,30 @@ function raf(fn) {
   /* ---------- Start ------------------------------------------------------------------ */
 
   // Each step runs on its own, so a problem in one part of the page never stops the others.
+  // A step with an id next to it only runs on the page that has that element.
   [
-    setupMenu,
-    setupDialogs,
-    renderChrome,
-    renderWeek,
-    renderYearTheme,
-    renderSchedule,
-    renderAuxiliaries,
-    renderQuiz,
-    renderSermons,
-    renderLibrary,
-    renderFreshers,
-    renderEvents,
-    renderNotices,
-    renderLeaders,
-    renderGallery,
-    renderContact,
-    setupForms,
-    highlightKeywords, // keep this last: it scans the finished page
-  ].forEach((step) => {
+    [setupMenu],
+    [setupPages],
+    [setupDialogs],
+    [setupHelpdesk],
+    [renderChrome],
+    [renderWeek, "#countdown"],
+    [renderYearTheme],
+    [renderSchedule, "#scheduleList"],
+    [renderAuxiliaries, "#auxGrid"],
+    [renderQuiz, "#quizBody"],
+    [renderSermons, "#sermonList"],
+    [renderLibrary, "#bookGrid"],
+    [renderFreshers, "#freshers"],
+    [renderEvents, "#eventList"],
+    [renderNotices, "#noticeList"],
+    [renderLeaders, "#leaderList"],
+    [renderGallery, "#galleryGrid"],
+    [renderContact, "#contactList"],
+    [setupForms],
+    [highlightKeywords], // keep this last: it scans the finished page
+  ].forEach(([step, onlyIf]) => {
+    if (onlyIf && !$(onlyIf)) return;
     try {
       step();
     } catch (err) {
