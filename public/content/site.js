@@ -43,7 +43,7 @@ NUBS_DATA.contact = {
     facebook: "",
     youtube: "",
     tiktok: "https://www.tiktok.com/@nubslegon?_r=1&_t=ZS-9BHh71THOoT",
-    whatsappChannel: "",
+    whatsappChannel: "https://whatsapp.com/channel/0029Vb92eiDDJ6H8ZewOwh2a",
   },
 };
 
