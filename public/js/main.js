@@ -326,6 +326,7 @@ function raf(fn) {
       $(id).alt = alt || `Theme of the year ${t.session}`;
     };
     pic("#themeWide", t.wideImage, t.wideAlt);
+    pic("#themeSquare", t.squareImage, t.squareAlt);
   }
 
   /* ---------- Schedule ------------------------------------------------------ */
@@ -1479,18 +1480,6 @@ function raf(fn) {
     $$(
       ".explore-card, .aux-card, .sched-card, .ev-card, .book, .next-link, .fr-contact, .notice, .family-card, .sector"
     ).forEach((el) => el.classList.add("glow"));
-    // The theme picture on the About page tilts towards the pointer.
-    withEl(".theme-collage", (box) => {
-      box.addEventListener("pointermove", (e) => {
-        const r = box.getBoundingClientRect();
-        box.style.setProperty("--tx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
-        box.style.setProperty("--ty", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
-      });
-      box.addEventListener("pointerleave", () => {
-        box.style.removeProperty("--tx");
-        box.style.removeProperty("--ty");
-      });
-    });
     let leaning = null;
     document.addEventListener(
       "pointermove",
