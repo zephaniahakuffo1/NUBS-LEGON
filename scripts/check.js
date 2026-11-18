@@ -226,6 +226,7 @@ if (needObject("content/site.js", "yearTheme", D.yearTheme)) {
   const w = "content/site.js > yearTheme";
   needText(w, D.yearTheme, "session", "verse", "reference");
   needFile(w, "wideImage", D.yearTheme.wideImage, { picture: true });
+  needFile(w, "squareImage", D.yearTheme.squareImage, { picture: true });
 }
 
 if (needObject("content/site.js", "forms", D.forms)) needText("content/site.js > forms", D.forms, "prayerPrivacyNote");
