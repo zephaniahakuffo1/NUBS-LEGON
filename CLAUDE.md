@@ -11,7 +11,9 @@ content, pictures and theme are kept apart from the code: content in `public/con
 
 Everything served lives in `public/`. The deploy config is `wrangler.jsonc` (Cloudflare, static assets from
 `./public`, `404-page` not-found handling, `build.command` runs the site check). Response headers come from
-`public/_headers`.
+`public/_headers`. CSS and JS are sent with `max-age=0, must-revalidate` so a deploy reaches phones at once
+(a stale `style.css` once showed new HTML with old styles); the `?v=` on their links in SHARED HEAD/BOTTOM only
+needs bumping to force a refresh for visitors still holding a copy cached under the old rule.
 
 ## Commands
 
