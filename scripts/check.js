@@ -329,14 +329,81 @@ if (needObject("content/freshers.js", "freshers", D.freshers)) {
 if (needList("content/events.js", "events", D.events)) {
   D.events.forEach((e, i) => {
     const w = label("events.js", "events", i, e.title);
-    knownKeys(w, e, ["title", "date", "dateLabel", "duration", "start", "end", "venue", "description", "image", "imageAlt"]);
+    knownKeys(w, e, [
+      "title",
+      "date",
+      "dateLabel",
+      "duration",
+      "start",
+      "end",
+      "venue",
+      "description",
+      "image",
+      "imageAlt",
+      "programme",
+    ]);
     needText(w, e, "title", "venue");
     optionalText(w, e, "description", "dateLabel", "duration", "imageAlt");
-    if (!realDate(e.date)) problem(w, `"date" must be a real date written like "2026-12-05" (year-month-day). It says: ${JSON.stringify(e.date)}`);
-    else if (e.date < today) note(w, `This event's date (${e.date}) has passed, so it is hidden. You can delete it.`);
-    if (!TIME.test(e.start) || !TIME.test(e.end)) problem(w, `"start" and "end" must be 24-hour times like "18:00".`);
+    // A week with a programme (Freshers' Week): each item has its own date and time.
+    const prog = e.programme;
+    const hasProg = prog !== undefined;
+    let last = e.date;
+    if (hasProg && (!Array.isArray(prog) || !prog.length))
+      problem(w, `"programme" should be a list inside [ square brackets ] with at least one item.`);
+    else if (hasProg)
+      prog.forEach((p, j) => {
+        const pw = `${w} > programme, item ${j + 1}${filled(p && p.title) ? ` ("${p.title}")` : ""}`;
+        if (!p || typeof p !== "object")
+          return problem(pw, `Each programme item should be a group inside { curly braces }.`);
+        knownKeys(pw, p, ["date", "start", "end", "title", "venue", "map"]);
+        needText(pw, p, "title");
+        optionalText(pw, p, "venue");
+        needLink(pw, "map", p.map);
+        if (!realDate(p.date))
+          problem(
+            pw,
+            `"date" must be a real date written like "2026-11-23". It says: ${JSON.stringify(p.date)}`
+          );
+        else {
+          if (realDate(e.date) && p.date < e.date)
+            problem(
+              pw,
+              `This item (${p.date}) is before the event's own date (${e.date}). Set the event's date to the first day.`
+            );
+          if (p.date > last) last = p.date;
+        }
+        if (!TIME.test(p.start))
+          problem(pw, `"start" must be a 24-hour time like "18:30". It says: ${JSON.stringify(p.start)}`);
+        if (p.end !== undefined) {
+          if (!TIME.test(p.end))
+            problem(
+              pw,
+              `"end" must be a 24-hour time like "20:00", or leave it out. It says: ${JSON.stringify(p.end)}`
+            );
+          else if (TIME.test(p.start) && p.end <= p.start)
+            problem(pw, `"end" (${p.end}) must be later than "start" (${p.start}).`);
+        }
+      });
+    if (!realDate(e.date))
+      problem(
+        w,
+        `"date" must be a real date written like "2026-12-05" (year-month-day). It says: ${JSON.stringify(e.date)}`
+      );
+    else if (last < today)
+      note(
+        w,
+        `This event's ${hasProg ? "last day" : "date"} (${last}) has passed, so it is hidden. You can delete it.`
+      );
+    if (hasProg && e.start === undefined && e.end === undefined) {
+      // start and end are not needed: the programme items have their own times.
+    } else if (!TIME.test(e.start) || !TIME.test(e.end))
+      problem(w, `"start" and "end" must be 24-hour times like "18:00".`);
     else if (e.end <= e.start) problem(w, `"end" (${e.end}) must be later than "start" (${e.start}).`);
-    if (filled(e.dateLabel) && !filled(e.duration)) note(w, `It has a dateLabel but no duration. Add  duration: "3 days",  so the card shows how long it lasts.`);
+    if (filled(e.dateLabel) && !filled(e.duration))
+      note(
+        w,
+        `It has a dateLabel but no duration. Add  duration: "3 days",  so the card shows how long it lasts.`
+      );
     if (filled(e.image)) needFile(w, "image", e.image, { picture: true });
   });
 }

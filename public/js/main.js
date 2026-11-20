@@ -35,7 +35,8 @@ function raf(fn) {
      renderLibrary      books (Read / Download, show more)
      renderSermons      Telegram card + recent sermons list
      renderFreshers     freshers panel, FAQs, contacts, "ask us" form
-     renderEvents       upcoming events (past ones hide automatically)
+     renderEvents       upcoming events (past ones hide automatically); a programme week
+                        (Freshers' Week) also drives the renderWeek countdown
      renderNotices      announcements
      renderLeaders      leadership cards + animated paragraph
      renderGallery      photo grid, filters, lightbox
@@ -253,20 +254,42 @@ function raf(fn) {
         end: mins(s.calendar.end),
       }));
 
+    // A week with a programme in events.js (Freshers' Week) takes over the countdown: from its
+    // first day to its last, the countdown goes through the programme items instead of the
+    // usual weekly meetings, then goes back to normal.
+    const weeks = D.events
+      .map((ev) => ({ ev, items: programmeOf(ev) }))
+      .filter((w) => w.items.length)
+      .map((w) => ({ ...w, from: w.items[0].date, to: w.items[w.items.length - 1].date }));
+    const inWeek = (dateStr) => weeks.some((w) => dateStr >= w.from && dateStr <= w.to);
+
     // Ghana time is UTC, so UTC fields are used throughout.
     function upcoming() {
       const now = Date.now();
       const base = new Date(now);
       let best = null;
+      const offer = (n) => {
+        if (n.t1 > now && (!best || n.t0 < best.t0)) best = n;
+      };
       meets.forEach((m) => {
-        for (let wk = 0; wk < 2; wk++) {
+        for (let wk = 0; wk < 3; wk++) {
           const add = ((m.day - base.getUTCDay() + 7) % 7) + wk * 7;
           const t0 =
             Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate() + add) + m.start * 6e4;
-          const t1 = t0 + (m.end - m.start) * 6e4;
-          if (t1 > now && (!best || t0 < best.t0)) best = { s: m.s, t0, t1 };
+          if (inWeek(new Date(t0).toISOString().slice(0, 10))) continue;
+          offer({ s: m.s, t0, t1: t0 + (m.end - m.start) * 6e4 });
         }
       });
+      weeks.forEach((w) =>
+        w.items.forEach((p) =>
+          offer({
+            s: { title: p.title, time: prettyTime(p.start), venue: p.venue, map: p.map },
+            t0: p.t0,
+            t1: p.t1,
+            week: w.ev.title,
+          })
+        )
+      );
       return best;
     }
 
@@ -275,9 +298,11 @@ function raf(fn) {
     function show(n) {
       cur = n;
       const dt = new Date(n.t0);
+      withEl("#nextLabel", (el) => (el.textContent = n.week ? `${n.week} · next up` : "Next gathering"));
       $("#nextTitle").textContent = n.s.title;
       $("#nextWhen").textContent =
-        `${WEEKDAYS[dt.getUTCDay()]} ${dt.getUTCDate()} ${MONTHS[dt.getUTCMonth()]}, ${n.s.time} at ${n.s.venue}`;
+        `${WEEKDAYS[dt.getUTCDay()]} ${dt.getUTCDate()} ${MONTHS[dt.getUTCMonth()]}, ${n.s.time}` +
+        (n.s.venue ? ` at ${n.s.venue}` : "");
       const map = $("#nextMap");
       if (n.s.map) {
         map.href = n.s.map;
@@ -293,7 +318,8 @@ function raf(fn) {
       let diff = cur.t0 - Date.now();
       if (diff <= 0) {
         $("#countdown").hidden = true;
-        $("#nextWhen").textContent = `Happening now at ${cur.s.venue}. Come and join us.`;
+        $("#nextWhen").textContent =
+          `Happening now${cur.s.venue ? " at " + cur.s.venue : ""}. Come and join us.`;
         return;
       }
       $("#countdown").hidden = false;
@@ -806,59 +832,149 @@ function raf(fn) {
 
   /* ---------- Events (with Add to calendar) ---------------------------------- */
 
-  function googleCalUrl(ev) {
+  // A week with a programme (Freshers' Week): each item gets its start and end time in ms.
+  // An item with no end lasts 2 hours. The list is sorted by start time.
+  function programmeOf(ev) {
+    return (Array.isArray(ev.programme) ? ev.programme : [])
+      .filter((p) => p && p.date && p.start && p.title)
+      .map((p) => {
+        const t0 = utcMs(p.date, p.start);
+        return { ...p, t0, t1: p.end ? utcMs(p.date, p.end) : t0 + 2 * 36e5 };
+      })
+      .sort((a, b) => a.t0 - b.t0);
+  }
+  // The day an event is over: the last programme day, or its own date.
+  function lastDay(ev) {
+    const items = programmeOf(ev);
+    return items.length ? items[items.length - 1].date : ev.date;
+  }
+  const shortDay = (dateStr) => {
+    const { y, m, d } = parseDate(dateStr);
+    return { wd: WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()].slice(0, 3), d, m, y };
+  };
+
+  // One calendar entry: { title, t0, t1, venue, details }.
+  function calEntry(ev) {
+    return {
+      title: ev.title,
+      t0: utcMs(ev.date, ev.start),
+      t1: utcMs(ev.date, ev.end),
+      venue: ev.venue,
+      details: ev.description,
+    };
+  }
+  function programmeEntries(ev) {
+    return programmeOf(ev).map((p) => ({
+      title: `${p.title} (${ev.title})`,
+      t0: p.t0,
+      t1: p.t1,
+      venue: p.venue || "",
+      details: ev.description,
+    }));
+  }
+
+  function googleCalUrl(c) {
     const p = new URLSearchParams({
       action: "TEMPLATE",
-      text: `${ev.title} (NUBS Legon)`,
-      dates: `${stamp(utcMs(ev.date, ev.start))}/${stamp(utcMs(ev.date, ev.end))}`,
-      details: ev.description || "",
-      location: ev.venue || "",
+      text: `${c.title} (NUBS Legon)`,
+      dates: `${stamp(c.t0)}/${stamp(c.t1)}`,
+      details: c.details || "",
+      location: c.venue || "",
     });
     return `https://calendar.google.com/calendar/render?${p.toString()}`;
   }
 
-  function downloadIcs(ev) {
-    const lines = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//NUBS Legon//Website//EN",
-      "BEGIN:VEVENT",
-      `UID:${stamp(utcMs(ev.date, ev.start))}-${ev.title.replace(/\W+/g, "-").toLowerCase()}@nubslegon`,
-      `DTSTAMP:${stamp(Date.now())}`,
-      `DTSTART:${stamp(utcMs(ev.date, ev.start))}`,
-      `DTEND:${stamp(utcMs(ev.date, ev.end))}`,
-      `SUMMARY:${ev.title} (NUBS Legon)`,
-      `LOCATION:${(ev.venue || "").replace(/,/g, "\\,")}`,
-      `DESCRIPTION:${(ev.description || "").replace(/,/g, "\\,")}`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ];
+  function downloadIcs(entries, name) {
+    const esc = (s) => (s || "").replace(/[,;]/g, (x) => "\\" + x);
+    const slug = (s) => s.replace(/\W+/g, "-").toLowerCase();
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//NUBS Legon//Website//EN"];
+    entries.forEach((c) =>
+      lines.push(
+        "BEGIN:VEVENT",
+        `UID:${stamp(c.t0)}-${slug(c.title)}@nubslegon`,
+        `DTSTAMP:${stamp(Date.now())}`,
+        `DTSTART:${stamp(c.t0)}`,
+        `DTEND:${stamp(c.t1)}`,
+        `SUMMARY:${esc(c.title)} (NUBS Legon)`,
+        `LOCATION:${esc(c.venue)}`,
+        `DESCRIPTION:${esc(c.details)}`,
+        "END:VEVENT"
+      )
+    );
+    lines.push("END:VCALENDAR");
     const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
-    const a = h("a", {
-      href: URL.createObjectURL(blob),
-      download: `${ev.title.replace(/\W+/g, "-").toLowerCase()}.ics`,
-    });
+    const a = h("a", { href: URL.createObjectURL(blob), download: `${slug(name)}.ics` });
     document.body.append(a);
     a.click();
     a.remove();
   }
 
+  // "In 3 days" style label. prefix turns it into "Starts in 3 days".
+  function daysAway(dateStr, today, prefix) {
+    const days = Math.round((new Date(dateStr + "T00:00:00Z") - new Date(today + "T00:00:00Z")) / 864e5);
+    const txt =
+      days === 0
+        ? "today"
+        : days === 1
+          ? "tomorrow"
+          : days > 60
+            ? `in ${Math.round(days / 30)} months`
+            : `in ${days} days`;
+    const out = prefix ? `${prefix} ${txt}` : txt;
+    return out.charAt(0).toUpperCase() + out.slice(1);
+  }
+
+  // The programme list on a week-long event card. Items that are over are ticked off.
+  function programmeList(items, now) {
+    const nextIdx = items.findIndex((p) => p.t1 > now);
+    return h(
+      "ol",
+      { class: "ev-prog", "aria-label": "Programme" },
+      items.map((p, i) => {
+        const { wd, d } = shortDay(p.date);
+        const state = p.t1 <= now ? "done" : i === nextIdx ? (p.t0 <= now ? "now" : "up") : "";
+        return h(
+          "li",
+          { class: state || null },
+          h("span", { class: "pr-day" }, h("b", { text: wd }), h("span", { text: d })),
+          h(
+            "span",
+            { class: "pr-what" },
+            h("b", { text: p.title }),
+            p.venue ? h("span", { text: p.venue }) : null
+          ),
+          h(
+            "span",
+            { class: "pr-time" },
+            state === "done" ? "Done" : state === "now" ? "On now" : prettyTime(p.start)
+          )
+        );
+      })
+    );
+  }
+
+  // The chip at the top of a week-long event card: before the week, during it, after the last item.
+  function programmeWhen(items, today, now) {
+    if (now < items[0].t0) return daysAway(items[0].date, today, "Starts");
+    const next = items.find((p) => p.t1 > now);
+    if (!next) return "That's a wrap. Thank you for coming";
+    if (next.t0 <= now) return `Happening now: ${next.title}`;
+    if (next.date === today) return `Today: ${next.title}, ${prettyTime(next.start)}`;
+    const { wd } = shortDay(next.date);
+    return `Next: ${next.title}, ${daysAway(next.date, today) === "Tomorrow" ? "tomorrow" : wd} ${prettyTime(next.start)}`;
+  }
+
   function renderEvents() {
     const list = $("#eventList");
     const today = todayStr();
-    // Events whose date has passed are hidden automatically.
-    const upcoming = D.events.filter((e) => e.date >= today).sort((a, b) => (a.date > b.date ? 1 : -1));
+    const now = Date.now();
+    // Events whose date (or last programme day) has passed are hidden automatically.
+    const upcoming = D.events.filter((e) => lastDay(e) >= today).sort((a, b) => (a.date > b.date ? 1 : -1));
     upcoming.forEach((ev, i) => {
       const { d, m } = parseDate(ev.date);
-      const days = Math.round((new Date(ev.date + "T00:00:00") - new Date(today + "T00:00:00")) / 864e5);
-      const when =
-        days === 0
-          ? "Today"
-          : days === 1
-            ? "Tomorrow"
-            : days > 60
-              ? `In ${Math.round(days / 30)} months`
-              : `In ${days} days`;
+      const items = programmeOf(ev);
+      const week = items.length > 0;
+      const when = week ? programmeWhen(items, today, now) : daysAway(ev.date, today);
       const poster = ev.image
         ? h("img", { src: ev.image, alt: ev.imageAlt || ev.title, loading: "lazy" })
         : h(
@@ -867,10 +983,64 @@ function raf(fn) {
             h("span", { text: MONTHS[m - 1] }),
             h("b", { text: ev.dateLabel ? String(parseDate(ev.date).y) : d })
           );
+
+      let facts;
+      if (week) {
+        const a = shortDay(items[0].date);
+        const z = shortDay(items[items.length - 1].date);
+        const span = Math.round((utcMs(items[items.length - 1].date) - utcMs(items[0].date)) / 864e5) + 1;
+        facts = [
+          `${a.wd} ${a.d}${a.m === z.m ? "" : " " + MONTHS[a.m - 1]} to ${z.wd} ${z.d} ${MONTHS[z.m - 1]} ${z.y}`,
+          ev.duration || `${span} days, ${items.length} gatherings`,
+          ev.venue,
+        ];
+      } else
+        facts = [
+          ev.dateLabel || prettyDate(ev.date),
+          ev.duration || `${prettyTime(ev.start)} to ${prettyTime(ev.end)}`,
+          ev.venue,
+        ];
+
+      let cal = null;
+      if (week) {
+        const entries = programmeEntries(ev);
+        const nextEntry = entries.find((c) => c.t1 > now);
+        cal = h(
+          "div",
+          { class: "ev-cal" },
+          nextEntry
+            ? h(
+                "a",
+                { href: googleCalUrl(nextEntry), target: "_blank", rel: "noopener" },
+                `Add ${nextEntry.title.replace(/ \(.*\)$/, "")} to Google Calendar`
+              )
+            : null,
+          h(
+            "button",
+            { type: "button", onclick: () => downloadIcs(entries, ev.title) },
+            "Download the whole week (.ics)"
+          )
+        );
+      } else if (!ev.dateLabel)
+        cal = h(
+          "div",
+          { class: "ev-cal" },
+          h(
+            "a",
+            { href: googleCalUrl(calEntry(ev)), target: "_blank", rel: "noopener" },
+            "Add to Google Calendar"
+          ),
+          h(
+            "button",
+            { type: "button", onclick: () => downloadIcs([calEntry(ev)], ev.title) },
+            "Download .ics"
+          )
+        );
+
       list.append(
         h(
           "article",
-          { class: "ev-card" + (i === 0 ? " next" : "") },
+          { class: "ev-card" + (i === 0 ? " next" : "") + (week ? " ev-week" : "") },
           h(
             "div",
             { class: "ev-poster" },
@@ -895,25 +1065,11 @@ function raf(fn) {
             h(
               "ul",
               { class: "ev-facts" },
-              h("li", { text: ev.dateLabel || prettyDate(ev.date) }),
-              ev.duration
-                ? h("li", { text: ev.duration })
-                : h("li", { text: `${prettyTime(ev.start)} to ${prettyTime(ev.end)}` }),
-              h("li", { text: ev.venue })
+              facts.map((f) => h("li", { text: f }))
             ),
             ev.description ? h("p", { class: "ev-desc", text: ev.description }) : null,
-            ev.dateLabel
-              ? null
-              : h(
-                  "div",
-                  { class: "ev-cal" },
-                  h(
-                    "a",
-                    { href: googleCalUrl(ev), target: "_blank", rel: "noopener" },
-                    "Add to Google Calendar"
-                  ),
-                  h("button", { type: "button", onclick: () => downloadIcs(ev) }, "Download .ics")
-                )
+            week ? programmeList(items, now) : null,
+            cal
           )
         )
       );

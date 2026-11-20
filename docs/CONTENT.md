@@ -57,6 +57,9 @@ then run `npm run sync` to copy them to the other pages.
 Open `events.js`, copy the example at the top of the file, paste it between the `[ ]`, change the words.
 Poster (optional): put the picture in `public/assets/images/events/` and add its name on the `image` line.
 Past events hide themselves.
+A week with a daily programme (like Freshers' Week) is one event with a `programme` list, one line per day:
+the card lists the programme and ticks off finished items, the home-page countdown goes through the
+items one by one during that week, then returns to the weekly meetings. The example is in `events.js`.
 
 ### Add an announcement
 Open `notices.js`, copy the example at the top, paste it between the `[ ]`. `pinned: true` keeps it on top.
