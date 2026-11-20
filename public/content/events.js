@@ -44,10 +44,10 @@ NUBS_DATA.events = [
     venue: "Different venues on campus",
     description:
       "A whole week to welcome our freshers into the family: cells, auxiliaries, worship, games and a thanksgiving service. Empowered for action!",
-    image: "assets/images/events/freshers-week-2026.jpg",
+    image: "assets/images/events/freshers-week-2026-v2.jpg",
     imageAlt: "Freshers' Week 26 programme outline poster",
     programme: [
-      { date: "2026-11-23", start: "20:00", end: "21:30", title: "Joint Cell Meeting" },
+      { date: "2026-11-23", start: "20:00", end: "21:30", title: "Joint Cell Meeting", venue: "CC Staircase" },
       { date: "2026-11-24", start: "18:30", title: "Introduction of Auxiliaries", venue: "CC Staircase" },
       {
         date: "2026-11-25",
