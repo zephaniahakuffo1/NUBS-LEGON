@@ -70,8 +70,8 @@ NUBS_DATA.events = [
   },
   {
     title: "NUBS Congress 2027",
-    dateLabel: "April 2027",
-    date: "2027-04-01",
+    dateLabel: "March 2027",
+    date: "2027-03-01",
     duration: "3 days",
     start: "08:00",
     end: "18:00",
